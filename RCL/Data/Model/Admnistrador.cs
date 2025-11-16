@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyColl.RCL.Data.Model;
-public class Administrador : Funcionario
+namespace RCL.Data.Model
 {
-    // Pode ter propriedades adicionais se necessário
+    public class Admnistrador : Utilizador
+    {
+
+    }
 }

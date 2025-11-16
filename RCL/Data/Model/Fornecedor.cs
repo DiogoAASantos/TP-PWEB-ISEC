@@ -1,12 +1,17 @@
-﻿using System;
+﻿using RCL.Data.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyColl.RCL.Data.Model;
-public class Fornecedor : Utilizador
+namespace RCL.Data.Model
 {
-    public string NomeEmpresa { get; set; } = string.Empty;
-    public ICollection<Produto> Produtos { get; set; } = new List<Produto>();
+    public class Fornecedor : Utilizador
+    {
+        public string Empresa { get; set; } = string.Empty;
+        public List<Produto> Produtos{ get; set; } = new();
+        public List<Encomenda> Vendas { get; set; } = new();
+    }
 }
+

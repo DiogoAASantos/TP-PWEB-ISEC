@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyColl.RCL.Data.Interfaces
+namespace RCL.Data.Interfaces
 {
     internal interface UtilizadorService
     {

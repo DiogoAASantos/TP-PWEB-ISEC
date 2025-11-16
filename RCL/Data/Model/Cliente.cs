@@ -1,11 +1,16 @@
-﻿using System;
+﻿using RCL.Data.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyColl.RCL.Data.Model;
-public class Cliente : Utilizador
+namespace RCL.Data.Model
 {
-    public ICollection<Encomenda> Encomendas { get; set; } = new List<Encomenda>();
+    public class Cliente : Utilizador
+    {
+        public List<Encomenda> HistoricoCompras { get; set; } = new();
+        public List<Produto> Carrinho { get; set; } = new();
+    }
 }
+

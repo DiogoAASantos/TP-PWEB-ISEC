@@ -1,13 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36616.10 d17.14
+VisualStudioVersion = 17.14.36616.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RCL", "RCL\RCL.csproj", "{F1F25958-95EA-4A47-93C0-43C6D713C5E1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWEB", "Blazor\BlazorWEB.csproj", "{62109CC6-A6E7-4D08-A7A1-E46442EEE932}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAUI", "MAUI\MAUI.csproj", "{F5DB69C1-2EA5-48E1-9756-F1C7C98581C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestaoLoja", "GestaoLoja\GestaoLoja.csproj", "{434E9CBE-6A20-4E94-98B2-53000518A4F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{66853A84-B176-45B2-8E8D-2F9456052A56}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +33,14 @@ Global
 		{F5DB69C1-2EA5-48E1-9756-F1C7C98581C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5DB69C1-2EA5-48E1-9756-F1C7C98581C5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F5DB69C1-2EA5-48E1-9756-F1C7C98581C5}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{434E9CBE-6A20-4E94-98B2-53000518A4F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{434E9CBE-6A20-4E94-98B2-53000518A4F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{434E9CBE-6A20-4E94-98B2-53000518A4F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{434E9CBE-6A20-4E94-98B2-53000518A4F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66853A84-B176-45B2-8E8D-2F9456052A56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66853A84-B176-45B2-8E8D-2F9456052A56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66853A84-B176-45B2-8E8D-2F9456052A56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66853A84-B176-45B2-8E8D-2F9456052A56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

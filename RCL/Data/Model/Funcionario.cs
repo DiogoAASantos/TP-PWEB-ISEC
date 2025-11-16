@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyColl.RCL.Data.Model
-
-public class Funcionario : Utilizador
+namespace RCL.Data.Model
 {
-    
+    public class Funcionario : Utilizador
+    {
+        
+    }
 }

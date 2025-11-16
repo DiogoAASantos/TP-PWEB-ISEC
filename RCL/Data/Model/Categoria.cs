@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyColl.RCL.Data.Model
+namespace RCL.Data.Model
 {
-    internal class Categoria
+    public class Categoria
     {
+        
     }
 }
