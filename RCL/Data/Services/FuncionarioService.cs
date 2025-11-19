@@ -1,107 +1,74 @@
 ﻿using MyColl.RCL.Data.Interfaces;
 using RCL.Data.Model;
 using System;
+using System.Net.Http.Json;
 
 namespace MyColl.RCL.Data.Services
 {
     public class FuncionarioService : IFuncionarioService
     {
-        private readonly AppDbContext _context; // Simula ou representa o contexto de BD
+        private readonly HttpClient _http;
 
-        public FuncionarioService(AppDbContext context)
+        public FuncionarioService(HttpClient http)
         {
-            _context = context;
+            _http = http;
         }
 
         // ============================
         // Gestão de Produtos
         // ============================
 
-        public IEnumerable<Produto> ListarProdutos(Categoria categoria, DisponibilidadeProduto disponibilidade)
+        public async Task<IEnumerable<Produto>> ListarProdutosAsync(Categoria categoria, DisponibilidadeProduto disponibilidade)
         {
-            return _context.Produtos
-                .Where(p => p.Categoria == categoria && p.Disponibilidade == disponibilidade)
-                .ToList();
+            var url = $"/api/produtos?categoria={categoria}&disponibilidade={disponibilidade}";
+            return await _http.GetFromJsonAsync<List<Produto>>(url) ?? new List<Produto>();
         }
 
         public async Task<Produto> AdicionarProdutoAsync(Produto produto)
         {
             produto.Estado = EstadoProduto.PendenteAprovacao;
-            _context.Produtos.Add(produto);
-            await _context.SaveChangesAsync();
-            return produto;
+            var response = await _http.PostAsJsonAsync("/api/produtos", produto);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<Produto>() ?? produto;
         }
 
         public async Task<Produto?> EditarProdutoAsync(Produto produtoAtualizado)
         {
-            var produto = _context.Produtos.FirstOrDefault(p => p.Id == produtoAtualizado.Id);
-            if (produto == null) return null;
-
-            produto.Nome = produtoAtualizado.Nome;
-            produto.Preco = produtoAtualizado.Preco;
-            produto.Stock = produtoAtualizado.Stock;
-            produto.Categoria = produtoAtualizado.Categoria;
-            produto.Disponibilidade = produtoAtualizado.Disponibilidade;
-
-            await _context.SaveChangesAsync();
-            return produto;
+            var response = await _http.PutAsJsonAsync($"/api/produtos/{produtoAtualizado.Id}", produtoAtualizado);
+            if (!response.IsSuccessStatusCode) return null;
+            return await response.Content.ReadFromJsonAsync<Produto>();
         }
 
         public async Task<bool> ApagarProdutoAsync(int produtoId)
         {
-            var produto = _context.Produtos.FirstOrDefault(p => p.Id == produtoId);
-            if (produto == null) return false;
-
-            // Só pode apagar se não houver vendas relacionadas
-            bool temVendas = _context.Encomendas
-                .Any(e => e.Produtos.Any(p => p.ProdutoId == produtoId));
-
-            if (temVendas) return false;
-
-            _context.Produtos.Remove(produto);
-            await _context.SaveChangesAsync();
-            return true;
+            var response = await _http.DeleteAsync($"/api/produtos/{produtoId}");
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> AtivarProdutoAsync(int produtoId)
         {
-            var produto = _context.Produtos.FirstOrDefault(p => p.Id == produtoId);
-            if (produto == null) return false;
-
-            produto.Disponibilidade = DisponibilidadeProduto.EmStock;
-            await _context.SaveChangesAsync();
-            return true;
+            var response = await _http.PatchAsync($"/api/produtos/{produtoId}/ativar", null);
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> InativarProdutoAsync(int produtoId)
         {
-            var produto = _context.Produtos.FirstOrDefault(p => p.Id == produtoId);
-            if (produto == null) return false;
-
-            produto.Disponibilidade = DisponibilidadeProduto.Esgotado;
-            await _context.SaveChangesAsync();
-            return true;
+            var response = await _http.PatchAsync($"/api/produtos/{produtoId}/inativar", null);
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> AtualizarPrecoEStockAsync(int produtoId, decimal novoPreco, int novoStock)
         {
-            var produto = _context.Produtos.FirstOrDefault(p => p.Id == produtoId);
-            if (produto == null) return false;
-
-            produto.PrecoBase = novoPreco;
-            produto.Stock = novoStock;
-            await _context.SaveChangesAsync();
-            return true;
+            var response = await _http.PatchAsync(
+                $"/api/produtos/{produtoId}/atualizar-preco-stock?novoPreco={novoPreco}&novoStock={novoStock}",
+                null);
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> AlterarEstadoProdutoAsync(int produtoId, EstadoProduto novoEstado)
         {
-            var produto = _context.Produtos.FirstOrDefault(p => p.Id == produtoId);
-            if (produto == null) return false;
-
-            produto.Estado = novoEstado;
-            await _context.SaveChangesAsync();
-            return true;
+            var response = await _http.PatchAsync($"/api/produtos/{produtoId}/estado?novoEstado={novoEstado}", null);
+            return response.IsSuccessStatusCode;
         }
 
         // ============================
@@ -110,78 +77,43 @@ namespace MyColl.RCL.Data.Services
 
         public async Task<bool> AtivarUtilizadorAsync(int utilizadorId)
         {
-            var utilizador = _context.Utilizadores.FirstOrDefault(u => u.Id == utilizadorId);
-            if (utilizador == null) return false;
-
-            utilizador.Estado = EstadoUtilizador.Ativo;
-            await _context.SaveChangesAsync();
-            return true;
+            var response = await _http.PatchAsync($"/api/utilizadores/{utilizadorId}/ativar", null);
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> InativarUtilizadorAsync(int utilizadorId)
         {
-            var utilizador = _context.Utilizadores.FirstOrDefault(u => u.Id == utilizadorId);
-            if (utilizador == null) return false;
-
-            utilizador.Estado = EstadoUtilizador.Inativo;
-            await _context.SaveChangesAsync();
-            return true;
+            var response = await _http.PatchAsync($"/api/utilizadores/{utilizadorId}/inativar", null);
+            return response.IsSuccessStatusCode;
         }
 
         // ============================
-        // Gestão de Vendas / Encomendas
+        // Gestão de Encomendas / Vendas
         // ============================
 
         public async Task<bool> ConfirmarVendaAsync(int encomendaId)
         {
-            var encomenda = _context.Encomendas.FirstOrDefault(e => e.Id == encomendaId);
-            if (encomenda == null) return false;
-
-            encomenda.Estado = EstadoEncomenda.Confirmada;
-            await _context.SaveChangesAsync();
-            return true;
+            var response = await _http.PatchAsync($"/api/encomendas/{encomendaId}/confirmar", null);
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> RejeitarVendaAsync(int encomendaId)
         {
-            var encomenda = _context.Encomendas.FirstOrDefault(e => e.Id == encomendaId);
-            if (encomenda == null) return false;
-
-            encomenda.Estado = EstadoEncomenda.Rejeitada;
-            await _context.SaveChangesAsync();
-            return true;
+            var response = await _http.PatchAsync($"/api/encomendas/{encomendaId}/rejeitar", null);
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> ExpedirProdutoAsync(int encomendaId)
         {
-            var encomenda = _context.Encomendas.FirstOrDefault(e => e.Id == encomendaId);
-            if (encomenda == null) return false;
-
-            encomenda.Estado = EstadoEncomenda.Expedida;
-
-            // Atualiza stock dos produtos da encomenda
-            foreach (var item in encomenda.Produtos)
-            {
-                var produto = _context.Produtos.FirstOrDefault(p => p.Id == item.ProdutoId);
-                if (produto != null)
-                    produto.Stock -= item.Quantidade;
-            }
-
-            await _context.SaveChangesAsync();
-            return true;
+            var response = await _http.PatchAsync($"/api/encomendas/{encomendaId}/expedir", null);
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> AtualizarStockAposVendaAsync(int produtoId, int quantidadeVendida)
         {
-            var produto = _context.Produtos.FirstOrDefault(p => p.Id == produtoId);
-            if (produto == null) return false;
-
-            if (produto.Stock < quantidadeVendida)
-                throw new InvalidOperationException("Stock insuficiente!");
-
-            produto.Stock -= quantidadeVendida;
-            await _context.SaveChangesAsync();
-            return true;
+            var response = await _http.PatchAsync(
+                $"/api/produtos/{produtoId}/atualizar-stock?quantidade={quantidadeVendida}", null);
+            return response.IsSuccessStatusCode;
         }
     }
 }

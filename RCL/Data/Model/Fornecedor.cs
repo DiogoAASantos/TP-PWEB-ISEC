@@ -11,7 +11,6 @@ namespace RCL.Data.Model
     {
         public string Empresa { get; set; } = string.Empty;
         public List<Produto> Produtos{ get; set; } = new();
-        public List<Encomenda> Vendas { get; set; } = new();
     }
 }
 

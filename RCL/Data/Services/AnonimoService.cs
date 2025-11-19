@@ -1,8 +1,9 @@
-﻿using RCL.Data.Model;
-using RCL.Data.Interfaces;
+﻿using RCL.Data.Interfaces;
+using RCL.Data.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,79 +11,63 @@ namespace RCL.Data.Model
 {
     public class AnonimoService : IAnonimoService
     {
-        private readonly List<Produto> _produtos; // Simula a base de dados de produtos
-        private readonly Anonimo _usuario; // O anónimo atual com carrinho
+        private readonly HttpClient _http;
 
-        public AnonimoService(List<Produto> produtos, Anonimo usuario)
+        public AnonimoService(HttpClient http)
         {
-            _produtos = produtos;
-            _usuario = usuario;
+            _http = http;
         }
 
         // Listar todos os produtos disponíveis
         public async Task<List<Produto>> ListarProdutosAsync()
         {
-            // Simula operação assíncrona
-            return await Task.FromResult(_produtos.Where(p => p.Disponibilidade == DisponibilidadeProduto.EmStock).ToList());
+            // Chama endpoint da API
+            return await _http.GetFromJsonAsync<List<Produto>>("/api/produtos/disponiveis") ?? new List<Produto>();
         }
 
-        // Listar produtos filtrando por categoria, subcategoria, preço e disponibilidade
+        // Listar produtos por categoria, subcategoria, preço e disponibilidade
         public async Task<List<Produto>> ListarProdutosPorCategoriaAsync(string categoria, string? subcategoria = null,
                                                                          decimal? precoMin = null,
                                                                          decimal? precoMax = null,
                                                                          DisponibilidadeProduto? disponibilidade = null)
         {
-            var query = _produtos.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(categoria))
-                query = query.Where(p => p.Categoria.Equals(categoria, StringComparison.OrdinalIgnoreCase));
+            var url = $"/api/produtos?categoria={categoria}";
 
             if (!string.IsNullOrWhiteSpace(subcategoria))
-                query = query.Where(p => p.SubCategoria != null && p.SubCategoria.Equals(subcategoria, StringComparison.OrdinalIgnoreCase));
-
+                url += $"&subcategoria={subcategoria}";
             if (precoMin.HasValue)
-                query = query.Where(p => p.Preco >= precoMin.Value);
-
+                url += $"&precoMin={precoMin.Value}";
             if (precoMax.HasValue)
-                query = query.Where(p => p.Preco <= precoMax.Value);
-
+                url += $"&precoMax={precoMax.Value}";
             if (disponibilidade.HasValue)
-                query = query.Where(p => p.Disponibilidade == disponibilidade);
+                url += $"&disponibilidade={disponibilidade.Value}";
 
-            return await Task.FromResult(query.ToList());
+            return await _http.GetFromJsonAsync<List<Produto>>(url) ?? new List<Produto>();
         }
 
-        // Obter um produto aleatório em destaque
+        // Obter um produto em destaque (aleatório)
         public async Task<Produto?> ObterProdutoDestaqueAsync()
         {
-            var produtosDisponiveis = _produtos.Where(p => p.Disponibilidade == DisponibilidadeProduto.EmStock).ToList();
-            if (!produtosDisponiveis.Any()) return null;
-
-            var random = new Random();
-            int index = random.Next(produtosDisponiveis.Count);
-            return await Task.FromResult(produtosDisponiveis[index]);
+            return await _http.GetFromJsonAsync<Produto?>("/api/produtos/destaque");
         }
 
         // Adicionar produtos ao carrinho (simulação, sem efetivar compra)
+        // Agora o carrinho pode ser apenas mantido no frontend (ex: sessão, local storage ou objeto em memória)
         public async Task AddCarrinhoAsync(List<(int produtoId, int quantidade)> itens)
         {
-            foreach (var (produtoId, quantidade) in itens)
-            {
-                var produto = _produtos.FirstOrDefault(p => p.Id == produtoId);
-                if (produto != null)
-                {
-                    for (int i = 0; i < quantidade; i++)
-                        _usuario.Carrinho.Add(produto);
-                }
-            }
-
-            await Task.CompletedTask;
+            // Enviar para API ou apenas atualizar carrinho local (dependendo da arquitetura)
+            // Aqui vamos assumir que é local:
+            var response = await _http.PostAsJsonAsync("/api/carrinho/adicionar", itens);
+            response.EnsureSuccessStatusCode();
         }
 
         // Registar-se como cliente (estado Pendente)
         public async Task<Cliente> RegistarComoClienteAsync(Cliente novoCliente)
         {
-            
+            var response = await _http.PostAsJsonAsync("/api/clientes/registar", novoCliente);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<Cliente>() ?? novoCliente;
         }
     }
 }
+

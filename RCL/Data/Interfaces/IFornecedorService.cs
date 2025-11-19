@@ -26,7 +26,7 @@ namespace RCL.Data.Interfaces
         Task<bool> AlterarEstadoProdutoAsync(int fornecedorId, int produtoId, EstadoProduto novoEstado);
 
         // Consultar histórico das vendas dos seus produtos
-        Task<List<Venda>> ConsultarHistoricoVendasAsync(int fornecedorId);
+        Task<List<Encomenda>> ConsultarHistoricoVendasAsync(int fornecedorId);
     }
 }
 

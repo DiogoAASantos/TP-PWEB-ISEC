@@ -5,7 +5,7 @@ namespace MyColl.RCL.Data.Interfaces
     public interface IFuncionarioService
     {
         // Gestão de Produtos
-        IEnumerable<Produto> ListarProdutos(Categoria categoria, DisponibilidadeProduto disponibilidade);
+        Task<IEnumerable<Produto>> ListarProdutosAsync(Categoria categoria, DisponibilidadeProduto disponibilidade);
         Task<Produto> AdicionarProdutoAsync(Produto produto);
         Task<Produto?> EditarProdutoAsync(Produto produto);
         Task<bool> ApagarProdutoAsync(int produtoId);
@@ -17,7 +17,6 @@ namespace MyColl.RCL.Data.Interfaces
         // Gestão de Clientes e Fornecedores
         Task<bool> AtivarUtilizadorAsync(int utilizadorId);
         Task<bool> InativarUtilizadorAsync(int utilizadorId);
-
 
         // Gestão de Vendas
         Task<bool> ConfirmarVendaAsync(int encomendaId);

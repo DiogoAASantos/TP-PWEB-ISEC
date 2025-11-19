@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,74 +10,49 @@ namespace RCL.Data.Interfaces
 {
     public class ClienteService : IClienteService
     {
-        private readonly Cliente _cliente; // cliente atual
-        private readonly AppDbContext _context; // contexto da base de dados (opcional)
+        private readonly HttpClient _http;
+        private readonly Cliente _cliente; // cliente atual (opcional, se quiseres manter carrinho local)
 
-        public ClienteService(Cliente cliente, AppDbContext context)
+        public ClienteService(HttpClient http, Cliente cliente)
         {
+            _http = http;
             _cliente = cliente;
-            _context = context;
         }
 
+        // Login do cliente
         public async Task<Cliente?> LoginAsync(string email, string password)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
                 return null;
 
-            // Consulta na base de dados
-            var cliente = await _context.Clientes
-                .FirstOrDefaultAsync(c => c.Email == email && c.Password == password && c.Estado == "Activo");
+            var response = await _http.PostAsJsonAsync("/api/clientes/login", new { email, password });
+            if (!response.IsSuccessStatusCode) return null;
 
-            return cliente;
+            return await response.Content.ReadFromJsonAsync<Cliente>();
         }
 
+        // Efetivar compra: transforma o carrinho em encomenda
         public async Task<Encomenda> EfetivarCompraAsync()
         {
-            if (!_cliente.Carrinho.Any())
+            if (_cliente.Carrinho == null || !_cliente.Carrinho.Any())
                 throw new InvalidOperationException("Carrinho vazio.");
 
-            var itensAgrupados = _cliente.Carrinho
-                .GroupBy(p => p.Id)
-                .Select(g => new EncomendaItem
-                {
-                    ProdutoId = g.Key,
-                    Quantidade = g.Count(),
-                    PrecoUnitario = g.First().Preco
-                })
-                .ToList();
+            var response = await _http.PostAsJsonAsync("/api/clientes/efetivar", _cliente.Carrinho);
+            response.EnsureSuccessStatusCode();
 
-            var novaEncomenda = new Encomenda
-            {
-                Id_Cliente = _cliente.Id,
-                Data_Encomenda = DateTime.Now,
-                itens = itensAgrupados,
-                Total = itensAgrupados.Sum(i => i.Quantidade * i.PrecoUnitario)
-            };
+            var encomenda = await response.Content.ReadFromJsonAsync<Encomenda>();
 
-            // Limpar carrinho após efetivar compra
+            // Limpar carrinho local
             _cliente.Carrinho.Clear();
 
-            // Persistir no banco (se houver)
-            if (_context != null)
-            {
-                _context.Encomendas.Add(novaEncomenda);
-                await _context.SaveChangesAsync();
-            }
-
-            return novaEncomenda;
+            return encomenda!;
         }
 
+        // Consultar histórico de encomendas do cliente
         public async Task<List<Encomenda>> ConsultarHistoricoComprasAsync(int clienteId)
         {
-            // Consulta todas as encomendas do cliente na base de dados
-            var historico = await _context.Encomendas
-                .Where(e => e.ClienteId == clienteId)
-                .Include(e => e.Itens)          // Inclui os itens da encomenda
-                .ThenInclude(i => i.Produto)    // Inclui os detalhes de cada produto
-                .OrderByDescending(e => e.DataEncomenda) // Mais recentes primeiro
-                .ToListAsync();
-
-            return historico;
+            return await _http.GetFromJsonAsync<List<Encomenda>>($"/api/clientes/{clienteId}/historico")
+                   ?? new List<Encomenda>();
         }
     }
 }

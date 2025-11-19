@@ -13,8 +13,8 @@ namespace RCL.Data.Interfaces
         // Logar como cliente
         Task<Cliente?> LoginAsync(string email, string password);
 
-        // Efetivar compra (pagar a encomenda)
-        Task<Encomenda> EfetivarCompraAsync(Encomenda encomenda);
+        // Efetivar compra (transforma o carrinho em encomenda)
+        Task<Encomenda> EfetivarCompraAsync();
 
         // Consultar histórico de encomendas
         Task<List<Encomenda>> ConsultarHistoricoComprasAsync(int clienteId);
