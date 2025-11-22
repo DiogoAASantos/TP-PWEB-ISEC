@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using API.Data;
 using Microsoft.AspNetCore.Identity;
-using API.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RCL.Data.Model;
 
 namespace API.Controllers
@@ -31,9 +32,45 @@ namespace API.Controllers
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
-            if (!result.Succeeded) return BadRequest(result.Errors);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
 
             await _userManager.AddToRoleAsync(user, dto.Tipo.ToString());
+
+            switch (dto.Tipo)
+            {
+                case TipoUtilizador.Cliente:
+                    _context.Clientes.Add(new Cliente
+                    {
+                        Nome = dto.Nome,
+                        Email = dto.Email,
+                        Estado = EstadoUtilizador.Pendente,
+                        IdentityUserId = user.Id
+                    });
+                    break;
+
+                case TipoUtilizador.Fornecedor:
+                    _context.Fornecedores.Add(new Fornecedor
+                    {
+                        Nome = dto.Nome,
+                        Email = dto.Email,
+                        Estado = EstadoUtilizador.Pendente,
+                        IdentityUserId = user.Id
+                    });
+                    break;
+
+                case TipoUtilizador.Funcionario:
+                    _context.Funcionarios.Add(new Funcionario
+                    {
+                        Nome = dto.Nome,
+                        Email = dto.Email,
+                        IdentityUserId = user.Id
+                    });
+                    break;
+            }
+
+            await _context.SaveChangesAsync();
+
             return Ok("Utilizador criado com sucesso");
         }
 

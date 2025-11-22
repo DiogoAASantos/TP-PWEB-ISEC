@@ -25,7 +25,7 @@ namespace RCL.Data.Interfaces
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
                 return null;
 
-            var response = await _http.PostAsJsonAsync("/api/clientes/login", new { email, password });
+            var response = await _http.PostAsJsonAsync("/api/auth/login", new { email, password });
             if (!response.IsSuccessStatusCode) return null;
 
             return await response.Content.ReadFromJsonAsync<Cliente>();
@@ -37,7 +37,7 @@ namespace RCL.Data.Interfaces
             if (_cliente.Carrinho == null || !_cliente.Carrinho.Any())
                 throw new InvalidOperationException("Carrinho vazio.");
 
-            var response = await _http.PostAsJsonAsync("/api/clientes/efetivar", _cliente.Carrinho);
+            var response = await _http.PostAsJsonAsync("/api/encomenda/efetivar", _cliente.Carrinho);
             response.EnsureSuccessStatusCode();
 
             var encomenda = await response.Content.ReadFromJsonAsync<Encomenda>();
@@ -51,8 +51,8 @@ namespace RCL.Data.Interfaces
         // Consultar histórico de encomendas do cliente
         public async Task<List<Encomenda>> ConsultarHistoricoComprasAsync(int clienteId)
         {
-            return await _http.GetFromJsonAsync<List<Encomenda>>($"/api/clientes/{clienteId}/historico")
-                   ?? new List<Encomenda>();
+            return await _http.GetFromJsonAsync<List<Encomenda>>("/api/clientes/historico")
+           ?? new List<Encomenda>();
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace RCL.Data.Model
 {
     public class AnonimoService : IAnonimoService
@@ -31,14 +32,17 @@ namespace RCL.Data.Model
                                                                          decimal? precoMax = null,
                                                                          DisponibilidadeProduto? disponibilidade = null)
         {
-            var url = $"/api/produtos?categoria={categoria}";
+            var url = $"/api/produto?categoria={Uri.EscapeDataString(categoria)}";
 
             if (!string.IsNullOrWhiteSpace(subcategoria))
-                url += $"&subcategoria={subcategoria}";
+                url += $"&subcategoria={Uri.EscapeDataString(subcategoria)}";
+
             if (precoMin.HasValue)
                 url += $"&precoMin={precoMin.Value}";
+
             if (precoMax.HasValue)
                 url += $"&precoMax={precoMax.Value}";
+
             if (disponibilidade.HasValue)
                 url += $"&disponibilidade={disponibilidade.Value}";
 

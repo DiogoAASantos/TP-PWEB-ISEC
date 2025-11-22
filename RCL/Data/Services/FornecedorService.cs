@@ -25,7 +25,7 @@ namespace RCL.Data.Interfaces
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
                 return null;
 
-            var response = await _http.PostAsJsonAsync("/api/fornecedores/login", new { email, password });
+            var response = await _http.PostAsJsonAsync("/api/auth/login", new { email, password });
             if (!response.IsSuccessStatusCode) return null;
 
             return await response.Content.ReadFromJsonAsync<Fornecedor>();
@@ -70,7 +70,7 @@ namespace RCL.Data.Interfaces
         public async Task<List<Encomenda>> ConsultarHistoricoVendasAsync(int fornecedorId)
         {
             // Chama a API para obter todas as encomendas que contenham produtos deste fornecedor
-            return await _http.GetFromJsonAsync<List<Encomenda>>($"/api/fornecedores/{fornecedorId}/encomendas")
+            return await _http.GetFromJsonAsync<List<Encomenda>>($"/api/fornecedores/{fornecedorId}/vendas")
                    ?? new List<Encomenda>();
         }
     }
