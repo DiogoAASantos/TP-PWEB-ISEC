@@ -19,18 +19,6 @@ namespace RCL.Data.Interfaces
             _cliente = cliente;
         }
 
-        // Login do cliente
-        public async Task<Cliente?> LoginAsync(string email, string password)
-        {
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-                return null;
-
-            var response = await _http.PostAsJsonAsync("/api/auth/login", new { email, password });
-            if (!response.IsSuccessStatusCode) return null;
-
-            return await response.Content.ReadFromJsonAsync<Cliente>();
-        }
-
         // Efetivar compra: transforma o carrinho em encomenda
         public async Task<Encomenda> EfetivarCompraAsync()
         {

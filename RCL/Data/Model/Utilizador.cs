@@ -15,8 +15,6 @@ namespace RCL.Data.Model
 
     public enum TipoUtilizador
     {
-        Administrador,
-        Funcionario,
         Cliente,
         Fornecedor
     }

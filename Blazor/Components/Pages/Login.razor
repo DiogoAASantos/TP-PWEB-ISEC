@@ -1,0 +1,42 @@
+﻿@page "/login"
+
+@using RCL.Data.DTO
+@using RCL.Data.Services
+
+@inject AuthService Auth
+@inject NavigationManager Nav
+
+<h3>Login</h3>
+
+@if (error != null)
+{
+    <p style="color:red">@error</p>
+}
+
+<EditForm Model="@model" OnValidSubmit="HandleLogin">
+    <InputText @bind-Value="model.Email" placeholder="Email" class="form-control" />
+    <InputText @bind-Value="model.Password" placeholder="Password" type="password" class="form-control" />
+
+    <button type="submit" class="btn btn-primary">Login</button>
+</EditForm>
+
+@code {
+    private LoginDTO model = new();   // dados do formulário
+    private string? error;
+
+    private async Task HandleLogin()
+    {
+        error = null;
+
+        var sucesso = await Auth.LoginAsync(model);
+
+        if (!sucesso)
+        {
+            error = "Email ou password inválidos.";
+            return;
+        }
+
+        // Após login bem-sucedido
+        Nav.NavigateTo("/");
+    }
+}

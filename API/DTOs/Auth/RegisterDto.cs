@@ -8,5 +8,8 @@ namespace API.DTOs.Auth
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public TipoUtilizador Tipo { get; set; }
+        public string Morada { get; set; } = string.Empty;
+        public string Telefone { get; set; } = string.Empty;
+        public string? Empresa { get; set; }
     }
 }

@@ -10,8 +10,6 @@ namespace RCL.Data.Interfaces
 {
     public interface IClienteService : IAnonimoService
     {
-        // Logar como cliente
-        Task<Cliente?> LoginAsync(string email, string password);
 
         // Efetivar compra (transforma o carrinho em encomenda)
         Task<Encomenda> EfetivarCompraAsync();

@@ -19,18 +19,6 @@ namespace RCL.Data.Interfaces
             _fornecedor = fornecedor;
         }
 
-        // Login do fornecedor
-        public async Task<Fornecedor?> LoginAsync(string email, string password)
-        {
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-                return null;
-
-            var response = await _http.PostAsJsonAsync("/api/auth/login", new { email, password });
-            if (!response.IsSuccessStatusCode) return null;
-
-            return await response.Content.ReadFromJsonAsync<Fornecedor>();
-        }
-
         // Inserir novo produto
         public async Task<Produto> InserirProdutoAsync(int fornecedorId, Produto produto)
         {

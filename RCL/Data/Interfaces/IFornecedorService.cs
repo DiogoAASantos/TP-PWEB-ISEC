@@ -10,9 +10,6 @@ namespace RCL.Data.Interfaces
 {
     public interface IFornecedorService
     {
-        // Login do fornecedor
-        Task<Fornecedor?> LoginAsync(string email, string password);
-
         // Inserir novo produto (por padrão fica "Listado" até ser aprovado)
         Task<Produto> InserirProdutoAsync(int fornecedorId, Produto produto);
 
