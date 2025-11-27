@@ -1,0 +1,42 @@
+﻿@page "/produto/{id:int}"
+
+@using RCL.Data.Model
+@using RCL.Data.Interfaces
+
+@inject IProdutoService Produtos
+
+<h3>Detalhes do Produto</h3>
+
+@if (produto == null)
+{
+    <p>A carregar...</p>
+}
+else
+{
+    <div class="produto">
+        <h2>@produto.Nome</h2>
+        <p><strong>Preço:</strong> @produto.Preco €</p>
+        <p><strong>Disponibilidade:</strong> @produto.Disponibilidade</p>
+        <p><strong>Descrição:</strong> @produto.Descricao</p>
+
+        <button @onclick="AdicionarAoCarrinho">Adicionar ao Carrinho</button>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+
+    private Produto? produto;
+
+    protected override async Task OnInitializedAsync()
+    {
+        produto = await Produtos.ObterProdutoPorIdAsync(id);
+    }
+
+    private void AdicionarAoCarrinho()
+    {
+        // TODO: implementar carrinho mais tarde
+        Console.WriteLine("Adicionar ao carrinho");
+    }
+}

@@ -5,53 +5,29 @@ using System.Linq;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using RCL.Data.DTO;
 
 namespace RCL.Data.Interfaces
 {
     public class FornecedorService : IFornecedorService
     {
         private readonly HttpClient _http;
-        private readonly Fornecedor _fornecedor; // fornecedor atual (opcional)
 
-        public FornecedorService(HttpClient http, Fornecedor fornecedor)
+        public FornecedorService(HttpClient http)
         {
             _http = http;
-            _fornecedor = fornecedor;
         }
 
-        // Inserir novo produto
-        public async Task<Produto> InserirProdutoAsync(int fornecedorId, Produto produto)
+        private Fornecedor? _fornecedorLogado;
+
+        public void SetCliente(UserDto fornecedor)
         {
-            produto.FornecedorId = fornecedorId;
-            produto.Estado = EstadoProduto.PendenteAprovacao;
-
-            var response = await _http.PostAsJsonAsync("/api/fornecedores/produtos", produto);
-            response.EnsureSuccessStatusCode();
-
-            return await response.Content.ReadFromJsonAsync<Produto>() ?? produto;
-        }
-
-        // Consultar produtos do fornecedor
-        public async Task<List<Produto>> ConsultarProdutosAsync(int fornecedorId)
-        {
-            return await _http.GetFromJsonAsync<List<Produto>>($"/api/fornecedores/{fornecedorId}/produtos")
-                   ?? new List<Produto>();
-        }
-
-        // Editar produto
-        public async Task<Produto?> EditarProdutoAsync(int fornecedorId, Produto produtoAtualizado)
-        {
-            var response = await _http.PutAsJsonAsync($"/api/fornecedores/{fornecedorId}/produtos/{produtoAtualizado.Id}", produtoAtualizado);
-            if (!response.IsSuccessStatusCode) return null;
-
-            return await response.Content.ReadFromJsonAsync<Produto>();
-        }
-
-        // Alterar estado do produto
-        public async Task<bool> AlterarEstadoProdutoAsync(int fornecedorId, int produtoId, EstadoProduto novoEstado)
-        {
-            var response = await _http.PatchAsync($"/api/fornecedores/{fornecedorId}/produtos/{produtoId}/estado?novoEstado={novoEstado}", null);
-            return response.IsSuccessStatusCode;
+            _fornecedorLogado = new Fornecedor
+            {
+                Id = fornecedor.Id,
+                Email = fornecedor.Email,
+                Nome = fornecedor.Nome
+            };
         }
 
         // Consultar histórico de vendas

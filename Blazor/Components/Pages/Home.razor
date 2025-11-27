@@ -1,0 +1,40 @@
+﻿@page "/Home"
+
+@using RCL.Data.Model
+@using RCL.Data.Services
+@using RCL.Data.Interfaces
+
+@inject IProdutoService Produtos
+@inject NavigationManager Nav
+
+<h2>Bem-vindo à Loja!</h2>
+
+@if (produtos == null)
+{
+    <p>A carregar produtos...</p>
+}
+else
+{
+    <h3>Produtos em Destaque</h3>
+
+    <div class="destaques">
+        @foreach (var p in produtos)
+        {
+            <div class="produto-card" @onclick="@(() => Nav.NavigateTo($"/produto/{p.Id}"))">
+                <h4>@p.Nome</h4>
+                <p>@p.Preco €</p>
+                <p>@p.Disponibilidade</p>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<Produto>? produtos;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        produtos = await Produtos.ListarProdutosAsync();
+    }
+}

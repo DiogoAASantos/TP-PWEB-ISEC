@@ -9,7 +9,7 @@ namespace RCL.Data.Interfaces
 {
     public interface IAuthService
     {
-        Task<bool> LoginAsync(LoginDTO dto);
+        Task<UserDto> LoginAsync(LoginDTO dto);
         Task<bool> RegisterAsync(RegisterDTO dto);
     }
 }

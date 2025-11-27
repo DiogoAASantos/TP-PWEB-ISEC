@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RCL.Data.DTO;
 
 namespace RCL.Data.Interfaces
 {
@@ -16,6 +17,7 @@ namespace RCL.Data.Interfaces
 
         // Consultar histórico de encomendas
         Task<List<Encomenda>> ConsultarHistoricoComprasAsync(int clienteId);
+        Task SetCliente(UserDto cliente);
     }
 }
 

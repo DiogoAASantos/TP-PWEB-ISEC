@@ -2,9 +2,12 @@
 
 @using RCL.Data.DTO
 @using RCL.Data.Services
+@using RCL.Data.Interfaces
 
 @inject AuthService Auth
 @inject NavigationManager Nav
+@inject IClienteService ClienteService
+@inject IFornecedorService FornecedorService
 
 <h3>Login</h3>
 
@@ -28,15 +31,25 @@
     {
         error = null;
 
-        var sucesso = await Auth.LoginAsync(model);
+        // Agora LoginAsync retorna UserDTO
+        var user = await Auth.LoginAsync(model);
 
-        if (!sucesso)
+        if (user == null)
         {
             error = "Email ou password inválidos.";
             return;
         }
 
-        // Após login bem-sucedido
-        Nav.NavigateTo("/");
+        // Guardar o utilizador no serviço correto
+        if (user.Tipo == "Cliente")
+        {
+            ClienteService.SetCliente(user);
+        }
+        else if (user.Tipo == "Fornecedor")
+        {
+            FornecedorService.SetFornecedor(user);
+        }
+
+        Nav.NavigateTo("/Home");
     }
 }

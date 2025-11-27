@@ -59,5 +59,17 @@ namespace API.Controllers
                 .OrderBy(r => Guid.NewGuid()) // pega um aleatório
                 .FirstOrDefaultAsync();
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Produto>> ObterProdutoPorId(int id)
+        {
+            var produto = await _context.Produtos
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (produto == null)
+                return NotFound(); 
+
+            return Ok(produto);
+        }
     }
 }

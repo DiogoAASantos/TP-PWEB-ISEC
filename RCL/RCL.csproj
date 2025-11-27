@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\DTO\" />
     <Folder Include="Shared\" />
     <Folder Include="Pages\" />
   </ItemGroup>

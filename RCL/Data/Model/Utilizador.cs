@@ -24,6 +24,7 @@ namespace RCL.Data.Model
         public int Id { get; set; }  // PK para EF
         public string Nome { get; set; } = string.Empty;
         public EstadoUtilizador Estado { get; set; } = EstadoUtilizador.Pendente;
+        public string Email { get; set; } = string.Empty;
 
         // Atributos comuns a Cliente e Fornecedor
         public string Morada { get; set; } = string.Empty;

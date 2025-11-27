@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RCL.Data.Model;
+using API.DTOs.Auth;
 
 namespace API.Controllers
 {
-    
+
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
@@ -14,11 +15,15 @@ namespace API.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
+        private readonly ApplicationDbContext _context;
+
         public AuthController(UserManager<ApplicationUser> userManager,
-                              SignInManager<ApplicationUser> signInManager)
+                              SignInManager<ApplicationUser> signInManager,
+                              ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = context;
         }
 
         [HttpPost("register")]
@@ -45,7 +50,6 @@ namespace API.Controllers
                         Nome = dto.Nome,
                         Email = dto.Email,
                         Estado = EstadoUtilizador.Pendente,
-                        IdentityUserId = user.Id
                     });
                     break;
 
@@ -54,17 +58,7 @@ namespace API.Controllers
                     {
                         Nome = dto.Nome,
                         Email = dto.Email,
-                        Estado = EstadoUtilizador.Pendente,
-                        IdentityUserId = user.Id
-                    });
-                    break;
-
-                case TipoUtilizador.Funcionario:
-                    _context.Funcionarios.Add(new Funcionario
-                    {
-                        Nome = dto.Nome,
-                        Email = dto.Email,
-                        IdentityUserId = user.Id
+                        Estado = EstadoUtilizador.Pendente
                     });
                     break;
             }
@@ -75,17 +69,41 @@ namespace API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto dto) 
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             var result = await _signInManager.PasswordSignInAsync(dto.Email, dto.Password, false, false);
             if (!result.Succeeded) return Unauthorized("Credenciais inválidas");
 
-            // Aqui poderás gerar um JWT no futuro
-            return Ok("Login bem-sucedido");
+            // Verifica se é cliente ou fornecedor
+            var cliente = await _userManager.Users.OfType<Cliente>().FirstOrDefaultAsync(c => c.Email == dto.Email);
+            if (cliente != null)
+            {
+                return Ok(new UserDto
+                {
+                    Id = cliente.Id,
+                    Email = cliente.Email,
+                    Nome = cliente.Nome,
+                    Tipo = "Cliente"
+                });
+            }
+
+            var fornecedor = await _userManager.Users.OfType<Fornecedor>().FirstOrDefaultAsync(f => f.Email == dto.Email);
+            if (fornecedor != null)
+            {
+                return Ok(new UserDto
+                {
+                    Id = fornecedor.Id,
+                    Email = fornecedor.Email,
+                    Nome = fornecedor.Nome,
+                    Tipo = "Fornecedor"
+                });
+            }
+
+            return Unauthorized("Utilizador não encontrado");
         }
+
+        public record RegisterDto(string Nome, string Email, string Password, TipoUtilizador Tipo);
+        public record LoginDto(string Email, string Password);
+
     }
-
-    public record RegisterDto(string Nome, string Email, string Password, TipoUtilizador Tipo);
-    public record LoginDto(string Email, string Password);
-
 }
