@@ -7,11 +7,11 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class EncomendaController : ControllerBase
+    public class EncomendasController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public EncomendaController(ApplicationDbContext context)
+        public EncomendasController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -49,5 +49,23 @@ namespace API.Controllers
 
             return Ok(encomenda);
         }
+
+        // GET: api/encomendas/{clienteId}
+        [HttpGet("{clienteId}")]
+        public async Task<ActionResult<List<Encomenda>>> ObterHistorico(int clienteId)
+        {
+            var encomendas = await _context.Encomendas
+                .Include(e => e.itens) 
+                .ThenInclude(i => i.Produto) 
+                .Where(e => e.Id_Cliente == clienteId)
+                .OrderByDescending(e => e.Data_Encomenda)
+                .ToListAsync();
+
+            if (encomendas == null || !encomendas.Any())
+                return NotFound("Nenhuma encomenda encontrada para este cliente.");
+
+            return Ok(encomendas);
+        }
+
     }
 }

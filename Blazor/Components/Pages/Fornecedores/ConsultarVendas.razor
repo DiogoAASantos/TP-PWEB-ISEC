@@ -1,0 +1,65 @@
+﻿@page "/fornecedor/historico"
+
+@using RCL.Data.Model
+@using RCL.Data.Interfaces
+@using RCL.Data.Services
+
+@inject IEncomendaService EncomendaService
+@inject NavigationManager Nav
+
+<h3>Histórico de Vendas</h3>
+
+@if (vendas == null)
+{
+    <p>A carregar histórico...</p>
+}
+else if (!vendas.Any())
+{
+    <p>Nenhuma venda encontrada.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Preço Unitário</th>
+                <th>Preço Total</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var venda in vendas)
+            {
+                <tr>
+                    <td>@venda.Produto.Nome</td>
+                    <td>@venda.Quantidade</td>
+                    <td>@venda.Produto.Preco €</td>
+                    <td>@(venda.Quantidade* venda.Produto.Preco) €</td>
+                    <td>@venda.DataEncomenda.ToString("dd/MM/yyyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<EncomendaItem>? vendas;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // TODO: obter o fornecedor logado
+            int fornecedorId = 1;
+
+            // Buscar histórico de vendas do fornecedor
+            vendas = await EncomendaService.ObterHistoricoVendasFornecedorAsync(fornecedorId);
+        }
+        catch (Exception ex)
+        {
+            // Tratar erros
+        }
+    }
+}

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RCL.Data.Model;
-using API.DTOs.Auth;
+using RCL.Data.DTO.Auth;
 
 namespace API.Controllers
 {
@@ -27,22 +27,22 @@ namespace API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+        public async Task<IActionResult> Register([FromBody] RegisterDTO dto)
         {
             var user = new ApplicationUser
             {
                 UserName = dto.Email,
                 Email = dto.Email,
-                Tipo = dto.Tipo
+                Tipo = dto.TipoUtilizador
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            await _userManager.AddToRoleAsync(user, dto.Tipo.ToString());
+            await _userManager.AddToRoleAsync(user, dto.TipoUtilizador.ToString());
 
-            switch (dto.Tipo)
+            switch (dto.TipoUtilizador)
             {
                 case TipoUtilizador.Cliente:
                     _context.Clientes.Add(new Cliente
@@ -78,7 +78,7 @@ namespace API.Controllers
             var cliente = await _userManager.Users.OfType<Cliente>().FirstOrDefaultAsync(c => c.Email == dto.Email);
             if (cliente != null)
             {
-                return Ok(new UserDto
+                return Ok(new UserDTO
                 {
                     Id = cliente.Id,
                     Email = cliente.Email,
@@ -90,7 +90,7 @@ namespace API.Controllers
             var fornecedor = await _userManager.Users.OfType<Fornecedor>().FirstOrDefaultAsync(f => f.Email == dto.Email);
             if (fornecedor != null)
             {
-                return Ok(new UserDto
+                return Ok(new UserDTO
                 {
                     Id = fornecedor.Id,
                     Email = fornecedor.Email,

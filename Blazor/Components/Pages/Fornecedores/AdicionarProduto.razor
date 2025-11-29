@@ -1,0 +1,57 @@
+﻿@page "/fornecedor/produtos/novo"
+
+@using RCL.Data.Model
+@using RCL.Data.Interfaces
+@inject IProdutoService ProdutoService
+@inject NavigationManager Nav
+
+<h3>Adicionar Novo Produto</h3>
+
+@if (error != null)
+{
+    <p style="color:red">@error</p>
+}
+
+<EditForm Model="@novoProduto" OnValidSubmit="AddProduto">
+    <InputText @bind-Value="novoProduto.Nome" placeholder="Nome do Produto" />
+    <InputTextArea @bind-Value="novoProduto.Descricao" placeholder="Descrição" />
+    <InputNumber @bind-Value="novoProduto.Preco" placeholder="Preço" />
+    <InputNumber @bind-Value="novoProduto.Stock" placeholder="Stock" />
+
+    <select @bind="novoProduto.Tipo">
+        <option value="Colecionavel">Colecionável</option>
+        <option value="Complemento">Complemento</option>
+    </select>
+
+    <select @bind="novoProduto.Categoria">
+        <option value="Categoria1">Categoria 1</option>
+        <option value="Categoria2">Categoria 2</option>
+        <!-- Adicionar outras categorias -->
+    </select>
+
+    <button type="submit" class="btn btn-primary">Adicionar Produto</button>
+</EditForm>
+
+@code {
+    private Produto novoProduto = new Produto();
+    private string? error;
+
+    private async Task AddProduto()
+    {
+        error = null;
+
+        try
+        {
+            // TODO: Substituir fornecedorId pelo fornecedor logado
+            int fornecedorId = 1;
+
+            var produtoCriado = await ProdutoService.InserirProdutoAsync(fornecedorId, novoProduto);
+
+            Nav.NavigateTo("/fornecedor/home");
+        }
+        catch (Exception ex)
+        {
+            error = "Erro ao adicionar produto: " + ex.Message;
+        }
+    }
+}

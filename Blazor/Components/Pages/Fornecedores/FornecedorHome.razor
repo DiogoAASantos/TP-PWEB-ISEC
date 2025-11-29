@@ -1,0 +1,60 @@
+﻿@page "/fornecedor/home"
+
+@using RCL.Data.Model
+@using RCL.Data.Interfaces
+
+@inject IProdutoService ProdutoService
+@inject NavigationManager Nav
+
+<h2>Área do Fornecedor</h2>
+
+@if (produtos == null)
+{
+    <p>A carregar os seus produtos...</p>
+}
+else
+{
+    <h3>Os meus produtos</h3>
+
+    <button class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/fornecedor/produtos/novo"))">
+        + Adicionar Produto
+    </button>
+
+    <div class="produtos-fornecedor">
+        @foreach (var p in produtos)
+        {
+            <div class="produto-card-fornecedor">
+                <h4>@p.Nome</h4>
+                <p><strong>Preço:</strong> @p.Preco €</p>
+                <p><strong>Stock:</strong> @p.Stock</p>
+                <p><strong>Estado:</strong> @p.Estado</p>
+
+                <button class="btn btn-secondary"
+                    @onclick="@(() => Nav.NavigateTo($"/fornecedor/produtos/editar/{p.Id}"))">
+                    Editar
+                </button>
+            </div>
+        }
+    </div>
+
+    <button class="btn btn-info" @onclick="VerHistorico">
+        Ver Histórico de Vendas
+    </button>
+}
+
+@code {
+    private List<Produto>? produtos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // TODO: substituir pelo fornecedor logado
+        int fornecedorId = 1;
+
+        produtos = await ProdutoService.ConsultarProdutosAsync(fornecedorId);
+    }
+
+    private void VerHistorico()
+    {
+        Nav.NavigateTo("/fornecedor/historico");
+    }
+}

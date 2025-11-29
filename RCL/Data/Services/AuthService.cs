@@ -1,6 +1,6 @@
 ﻿using API.DTOs.Auth;
 using Microsoft.AspNetCore.Authentication;
-using RCL.Data.DTO;
+using RCL.Data.DTO.Auth;
 using RCL.Data.Interfaces;
 using RCL.Data.Model;
 using System;

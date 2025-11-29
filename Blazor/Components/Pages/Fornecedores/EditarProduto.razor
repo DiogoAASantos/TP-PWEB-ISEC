@@ -1,0 +1,63 @@
+﻿@page "/fornecedor/produtos/editar/{ProdutoId:int}"
+
+@using RCL.Data.Model
+@using RCL.Data.Interfaces
+@using RCL.Data.Services
+
+@inject IProdutoService ProdutoService
+@inject NavigationManager Nav
+
+<h3>Editar Produto</h3>
+
+@if (produto == null)
+{
+    <p>A carregar...</p>
+}
+else
+{
+    <p><strong>Nome:</strong> @produto.Nome</p>
+    <p><strong>Preço:</strong> @produto.Preco €</p>
+    <p><strong>Stock:</strong> @produto.Stock</p>
+    <p><strong>Estado:</strong> @produto.Estado</p>
+
+    <button class="btn btn-primary" @onclick="AlterarEstado">
+        @(produto.Estado == EstadoProduto.PendenteAprovacao ? "Ativar" : "Suspender")
+    </button>
+
+    <button class="btn btn-danger" @onclick="RemoverProduto">
+        Remover
+    </button>
+}
+
+@code {
+    [Parameter] public int ProdutoId { get; set; }
+    private Produto? produto;
+
+    protected override async Task OnInitializedAsync()
+    {
+        produto = await ProdutoService.ObterProdutoPorIdAsync(ProdutoId);
+    }
+
+    private async Task AlterarEstado()
+    {
+        if (produto == null) return;
+
+        var novoEstado = produto.Estado == EstadoProduto.PendenteAprovacao
+            ? EstadoProduto.AVenda
+            : EstadoProduto.PendenteAprovacao;
+
+        await ProdutoService.AlterarEstadoProdutoAsync(produto.FornecedorId, produto.Id, novoEstado);
+        produto.Estado = novoEstado;
+    }
+
+    private async Task RemoverProduto()
+    {
+        if (produto == null) return;
+
+        var sucesso = await ProdutoService.AlterarEstadoProdutoAsync(produto.FornecedorId, produto.Id, EstadoProduto.Vendido);
+        if (sucesso)
+        {
+            Nav.NavigateTo("/fornecedor/home");
+        }
+    }
+}

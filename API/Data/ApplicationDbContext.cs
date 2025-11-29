@@ -18,6 +18,7 @@ namespace API.Data
         public DbSet<Produto> Produtos { get; set; }
         public DbSet<Encomenda> Encomendas { get; set; }
         public DbSet<EncomendaItem> EncomendaItems { get; set; }
+        public DbSet<CarrinhoItem> CarrinhoItens { get; set; }
 
         // Tabelas de detalhe para clientes e fornecedores
         public DbSet<Cliente> Clientes { get; set; }
@@ -53,6 +54,13 @@ namespace API.Data
                 .WithMany(e => e.Items)
                 .HasForeignKey(ei => ei.EncomendaId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<CarrinhoItem>()
+                .HasOne(ci => ci.Produto)
+                .WithMany()
+                .HasForeignKey(ci => ci.ProdutoId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿namespace RCL.Data.DTO
+﻿namespace RCL.Data.DTO.Auth
 {
-    public class UserDto
+    public class UserDTO
     {
         public int Id { get; set; }
         public string Email { get; set; }

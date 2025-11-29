@@ -24,8 +24,40 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Home.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
+[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Clientes/Carrinho.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDbGllbnRlc1xDYXJyaW5oby5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Clientes/Checkout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDbGllbnRlc1xDaGVja291dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Clientes/ClienteHome.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDbGllbnRlc1xDbGllbnRlSG9tZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Clientes/HistoricoEncomendas.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDbGllbnRlc1xIaXN0b3JpY29FbmNvbWVuZGFzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Clientes/VerProduto.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDbGllbnRlc1xWZXJQcm9kdXRvLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Fornecedores/AdicionarProduto.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xGb3JuZWNlZG9yZXNcQWRpY2lvbmFyUHJvZHV0by5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Fornecedores/ConsultarVendas.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xGb3JuZWNlZG9yZXNcQ29uc3VsdGFyVmVuZGFzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Fornecedores/EditarProduto.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xGb3JuZWNlZG9yZXNcRWRpdGFyUHJvZHV0by5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Fornecedores/FornecedorHome.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xGb3JuZWNlZG9yZXNcRm9ybmVjZWRvckhvbWUucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Login.razor]
@@ -34,10 +66,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Register.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSZWdpc3Rlci5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/VerProduto.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xWZXJQcm9kdXRvLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Routes.razor]

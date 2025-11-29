@@ -4,6 +4,8 @@
 @using RCL.Data.Interfaces
 
 @inject IProdutoService Produtos
+@inject ICarrinhoService CarrinhoService
+@inject NavigationManager Nav
 
 <h3>Detalhes do Produto</h3>
 
@@ -34,9 +36,12 @@ else
         produto = await Produtos.ObterProdutoPorIdAsync(id);
     }
 
-    private void AdicionarAoCarrinho()
+    private async Task AdicionarAoCarrinho()
     {
-        // TODO: implementar carrinho mais tarde
-        Console.WriteLine("Adicionar ao carrinho");
+        if (produto != null)
+        {
+            await CarrinhoService.AdicionarProdutoAsync(produto.Id, 1);
+            Nav.NavigateTo("/carrinho");
+        }
     }
 }

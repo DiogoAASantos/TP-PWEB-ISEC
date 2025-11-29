@@ -5,14 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RCL.Data.DTO
+namespace RCL.Data.DTO.Auth
 {
-    public enum TipoUtilizador
-    {
-        Cliente,
-        Fornecedor
-    }
-
     public class RegisterDTO
     {
         public string Nome { get; set; } = string.Empty;

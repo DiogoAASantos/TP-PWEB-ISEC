@@ -6,13 +6,18 @@ using System.Threading.Tasks;
 
 namespace RCL.Data.Model
 {
-    public class EncomendaItem
+    public class CarrinhoItem
     {
-        public int ProdutoId { get; set; }
-        public int Quantidade { get; set; }
-        public decimal PrecoUnitario { get; set; }
+        public int Id { get; set; }
 
-        
+        public string UserId { get; set; } = null!;
+
+        public int ProdutoId { get; set; }
+
+        public int Quantidade { get; set; }
+
+        // Navegação
         public Produto Produto { get; set; } = null!;
     }
+
 }

@@ -1,0 +1,80 @@
+﻿@page "/carrinho"
+
+@using RCL.Data.Model
+@using RCL.Data.Interfaces
+
+@inject ICarrinhoService CarrinhoService
+@inject NavigationManager Nav
+
+<h2>Meu Carrinho</h2>
+
+@if (!itensCarrinho.Any())
+{
+    <p>O carrinho está vazio.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Preço</th>
+                <th>Quantidade</th>
+                <th>Total</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in itensCarrinho)
+            {
+                <tr>
+                    <td>@item.Produto.Nome</td>
+                    <td>@item.Produto.Preco €</td>
+
+                    <td>
+                        <input type="number" min="1" value="@item.Quantidade"
+                               @onchange="(e) => AtualizarQuantidade(item.Produto.Id, int.Parse(e.Value.ToString()!))" />
+                    </td>
+
+                    <td>@(item.Produto.Preco* item.Quantidade) €</td>
+
+                    <td>
+                        <button @onclick="() => RemoverItem(item.Produto.Id)">
+                            Remover
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <p><strong>Total:</strong> @CarrinhoService.TotalAsync() €</p>
+
+    <button @onclick="IrParaCheckout">Finalizar Compra</button>
+}
+
+@code {
+    private List<CarrinhoItem> itensCarrinho = new();
+
+    protected override async void OnInitialized()
+    {
+        itensCarrinho = await CarrinhoService.ObterItensAsync();
+    }
+
+    private async Task AtualizarQuantidade(int produtoId, int novaQuantidade)
+    {
+        await CarrinhoService.AtualizarQuantidadeAsync(produtoId, novaQuantidade);
+    }
+
+    private async Task RemoverItem(int produtoId)
+    {
+        await CarrinhoService.RemoverProdutoAsync(produtoId);
+        itensCarrinho = await CarrinhoService.ObterItensAsync();
+    }
+
+    private void IrParaCheckout()
+    {
+        Nav.NavigateTo("/checkout");
+    }
+}

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
-using RCL.Data.DTO;
+using RCL.Data.DTO.Auth;
 
 namespace RCL.Data.Interfaces
 {
