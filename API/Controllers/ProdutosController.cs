@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RCL.Data.Model;
+using RCL.Data.Model.Enums;
 
 namespace API.Controllers
 {

@@ -1,43 +1,45 @@
 ﻿@page "/fornecedor/historico"
-
-@using RCL.Data.Model
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@using RCL.Data.DTO
 @using RCL.Data.Interfaces
-@using RCL.Data.Services
 
+@attribute [Authorize(Roles = "Fornecedor")]
 @inject IEncomendaService EncomendaService
-@inject NavigationManager Nav
+@inject AuthenticationStateProvider AuthProvider
 
-<h3>Histórico de Vendas</h3>
+<h3>Minhas Vendas</h3>
 
 @if (vendas == null)
 {
-    <p>A carregar histórico...</p>
+    <p>A carregar...</p>
 }
 else if (!vendas.Any())
 {
-    <p>Nenhuma venda encontrada.</p>
+    <div class="alert alert-info">Ainda não efetuou nenhuma venda.</div>
 }
 else
 {
-    <table class="table table-striped">
+    <table class="table table-striped table-hover">
         <thead>
             <tr>
-                <th>Produto</th>
-                <th>Quantidade</th>
-                <th>Preço Unitário</th>
-                <th>Preço Total</th>
                 <th>Data</th>
+                <th>Produto</th>
+                <th>Qtd</th>
+                <th>Preço Unit.</th>
+                <th>Total</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var venda in vendas)
+            @foreach (var v in vendas)
             {
                 <tr>
-                    <td>@venda.Produto.Nome</td>
-                    <td>@venda.Quantidade</td>
-                    <td>@venda.Produto.Preco €</td>
-                    <td>@(venda.Quantidade* venda.Produto.Preco) €</td>
-                    <td>@venda.DataEncomenda.ToString("dd/MM/yyyy")</td>
+                    <td>@v.DataVenda.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@v.NomeProduto</td>
+                    <td>@v.Quantidade</td>
+                    <td>@v.PrecoUnitario.ToString("C2")</td>
+                    <td>@v.Total.ToString("C2")</td>
                 </tr>
             }
         </tbody>
@@ -45,21 +47,16 @@ else
 }
 
 @code {
-    private List<EncomendaItem>? vendas;
+    private List<VendaFornecedorDTO>? vendas;
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            // TODO: obter o fornecedor logado
-            int fornecedorId = 1;
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        var userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
-            // Buscar histórico de vendas do fornecedor
-            vendas = await EncomendaService.ObterHistoricoVendasFornecedorAsync(fornecedorId);
-        }
-        catch (Exception ex)
+        if (!string.IsNullOrEmpty(userId))
         {
-            // Tratar erros
+            vendas = await EncomendaService.ObterVendasDoFornecedorAsync(userId);
         }
     }
 }

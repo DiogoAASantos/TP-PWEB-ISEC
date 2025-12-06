@@ -1,9 +1,9 @@
 ﻿using API.Data;
-using RCL.Data.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RCL.Data.Model;
 using System;
+using RCL.Data.DTO.CarrinhoDTOs;
 
 
 namespace API.Controllers

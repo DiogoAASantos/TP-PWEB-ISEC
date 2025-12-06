@@ -1,4 +1,5 @@
-﻿using RCL.Data.Model;
+﻿using RCL.Data.DTO;
+using RCL.Data.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace RCL.Data.Services
                    ?? throw new Exception("Falha ao efetivar compra");
         }
 
-        public async Task<List<Encomenda>> ConsultarHistoricoAsync(int clienteId)
+        public async Task<List<Encomenda>> ConsultarHistoricoAsync(string clienteId)
         {
             var response = await _http.GetAsync($"/api/encomendas/{clienteId}");
             response.EnsureSuccessStatusCode();
@@ -37,6 +38,12 @@ namespace RCL.Data.Services
             var historico = await response.Content.ReadFromJsonAsync<List<Encomenda>>();
 
             return historico ?? new List<Encomenda>();
+        }
+
+        public async Task<List<VendaFornecedorDTO>> ObterVendasDoFornecedorAsync(string fornecedorId)
+        {
+            return await _http.GetFromJsonAsync<List<VendaFornecedorDTO>>($"api/encomendas/fornecedor/{fornecedorId}/vendas")
+                   ?? new List<VendaFornecedorDTO>();
         }
     }
 }

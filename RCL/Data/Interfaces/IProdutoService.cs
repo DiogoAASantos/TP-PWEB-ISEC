@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RCL.Data.Model.Enums;
 
 namespace RCL.Data.Interfaces
 {
@@ -25,16 +26,16 @@ namespace RCL.Data.Interfaces
         Task<Produto?> ObterProdutoDestaqueAsync();
 
         // Inserir novo produto (fornecedor)
-        Task<Produto> InserirProdutoAsync(int fornecedorId, Produto produto);
+        Task<Produto> InserirProdutoAsync(string fornecedorId, Produto produto);
 
         // Consultar produtos do fornecedor
-        Task<List<Produto>> ConsultarProdutosAsync(int fornecedorId);
+        Task<List<Produto>> ConsultarProdutosAsync(string fornecedorId);
 
         // Editar produto
-        Task<Produto?> EditarProdutoAsync(int fornecedorId, Produto produtoAtualizado);
+        Task<Produto?> EditarProdutoAsync(string fornecedorId, Produto produtoAtualizado);
 
         // Alterar estado do produto (aprovado, pendente, rejeitado)
-        Task<bool> AlterarEstadoProdutoAsync(int fornecedorId, int produtoId, EstadoProduto novoEstado);
+        Task<bool> AlterarEstadoProdutoAsync(string fornecedorId, int produtoId, EstadoProduto novoEstado);
         Task<Produto?> ObterProdutoPorIdAsync(int produtoId);
     }
 }

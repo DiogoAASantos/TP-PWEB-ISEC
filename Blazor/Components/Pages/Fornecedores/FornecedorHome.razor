@@ -1,60 +1,95 @@
 ﻿@page "/fornecedor/home"
-
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
 @using RCL.Data.Model
 @using RCL.Data.Interfaces
+@using RCL.Data.Model.Enums;
+
+@attribute [Authorize(Roles = "Fornecedor")] 
 
 @inject IProdutoService ProdutoService
+@inject AuthenticationStateProvider AuthProvider
 @inject NavigationManager Nav
 
 <h2>Área do Fornecedor</h2>
 
-@if (produtos == null)
+@if (isLoading)
 {
     <p>A carregar os seus produtos...</p>
 }
+else if (produtos == null || !produtos.Any())
+{
+    <p>Ainda não tem produtos registados.</p>
+    <button class="btn btn-primary" @onclick="IrParaNovo">Começar a Vender</button>
+}
 else
 {
-    <h3>Os meus produtos</h3>
+    <div class="d-flex justify-content-between mb-3">
+        <h3>Os meus produtos</h3>
+        <div>
+            <button class="btn btn-primary me-2" @onclick="IrParaNovo">+ Novo Produto</button>
+            <button class="btn btn-info" @onclick="VerHistorico">Histórico Vendas</button>
+        </div>
+    </div>
 
-    <button class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/fornecedor/produtos/novo"))">
-        + Adicionar Produto
-    </button>
-
-    <div class="produtos-fornecedor">
+    <div class="row">
         @foreach (var p in produtos)
         {
-            <div class="produto-card-fornecedor">
-                <h4>@p.Nome</h4>
-                <p><strong>Preço:</strong> @p.Preco €</p>
-                <p><strong>Stock:</strong> @p.Stock</p>
-                <p><strong>Estado:</strong> @p.Estado</p>
-
-                <button class="btn btn-secondary"
-                    @onclick="@(() => Nav.NavigateTo($"/fornecedor/produtos/editar/{p.Id}"))">
-                    Editar
-                </button>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    @* Se tiveres imagens, coloca aqui *@
+                    <div class="card-body">
+                        <h5 class="card-title">@p.Nome</h5>
+                        <p class="card-text">
+                            <strong>Preço:</strong> @p.Preco.ToString("C2")<br />
+                            <strong>Stock:</strong> @p.Stock<br />
+                            <strong>Estado:</strong> 
+                            <span class="badge @ObterCorEstado(p.Estado)">@p.Estado</span>
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-secondary w-100"
+                                @onclick="@(() => Nav.NavigateTo($"/fornecedor/produtos/editar/{p.Id}"))">
+                            Gerir / Editar
+                        </button>
+                    </div>
+                </div>
             </div>
         }
     </div>
-
-    <button class="btn btn-info" @onclick="VerHistorico">
-        Ver Histórico de Vendas
-    </button>
 }
 
 @code {
     private List<Produto>? produtos;
+    private bool isLoading = true;
+    private string userId = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        // TODO: substituir pelo fornecedor logado
-        int fornecedorId = 1;
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
-        produtos = await ProdutoService.ConsultarProdutosAsync(fornecedorId);
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
+            
+            if (!string.IsNullOrEmpty(userId))
+            {
+                produtos = await ProdutoService.ConsultarProdutosAsync(userId);
+            }
+        }
+        isLoading = false;
     }
 
-    private void VerHistorico()
+    private void IrParaNovo() => Nav.NavigateTo("/fornecedor/produtos/novo");
+    private void VerHistorico() => Nav.NavigateTo("/fornecedor/historico");
+
+    private string ObterCorEstado(EstadoProduto estado) => estado switch
     {
-        Nav.NavigateTo("/fornecedor/historico");
-    }
+        EstadoProduto.AVenda => "bg-success",
+        EstadoProduto.PendenteAprovacao => "bg-warning text-dark",
+        EstadoProduto.Vendido => "bg-secondary",
+        _ => "bg-light text-dark"
+    };
 }

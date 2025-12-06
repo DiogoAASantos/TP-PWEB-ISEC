@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RCL.Data.Model.Enums;
 
 namespace RCL.Data.DTO.Auth
 {

@@ -9,9 +9,12 @@ using RCL.Data.DTO.Auth;
 
 namespace RCL.Data.Interfaces
 {
-    public interface IClienteService : IAnonimoService
+    public interface IClienteService
     {
-        Task SetCliente(UserDTO cliente);
+        void SetCliente(UserDTO cliente);
+        Task<Encomenda> EfetivarCompraAsync();
+        Task<Cliente> RegistarComoClienteAsync(Cliente novoCliente);
+        Task<List<Encomenda>> ConsultarHistoricoComprasAsync(string clienteId);
     }
 }
 

@@ -1,6 +1,8 @@
 ﻿using API.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RCL.Data.DTO;
+using RCL.Data.DTO.EncomendasDTOs;
 using RCL.Data.Model;
 
 namespace API.Controllers
@@ -19,52 +21,109 @@ namespace API.Controllers
 
         // POST: api/clientes/efetivar
         [HttpPost("efetivar")]
-        public async Task<ActionResult<Encomenda>> EfetivarCompra([FromBody] List<Produto> carrinho)
+        public async Task<ActionResult<int>> EfetivarCompra([FromBody] CriarEncomendaDTO dto)
         {
-            if (carrinho == null || !carrinho.Any())
+            if (dto.Itens == null || !dto.Itens.Any())
                 return BadRequest("Carrinho vazio.");
 
-            // Criar Encomenda
-            var encomendaItens = carrinho
-                .GroupBy(p => p.Id)
-                .Select(g => new EncomendaItem
-                {
-                    ProdutoId = g.Key,
-                    Quantidade = g.Count(),
-                    PrecoUnitario = g.First().Preco
-                })
-                .ToList();
+            if (string.IsNullOrEmpty(dto.ClienteId))
+                return BadRequest("ID do cliente inválido.");
 
-            var encomenda = new Encomenda
+            // 1. Criar a nova Encomenda (esqueleto)
+            var novaEncomenda = new Encomenda
             {
-                Id_Cliente = 0, // Aqui você precisaria do cliente logado, exemplo: via JWT
+                ClienteId = dto.ClienteId, // String (Identity)
                 Data_Encomenda = DateTime.UtcNow,
-                Itens = encomendaItens,
-                Total = encomendaItens.Sum(i => i.Quantidade * i.PrecoUnitario),
-                Estado = EstadoEncomenda.Pendente
+                Estado = EstadoEncomenda.Pendente,
+                Itens = new List<EncomendaItem>()
             };
 
-            _context.Encomendas.Add(encomenda);
+            decimal totalCalculado = 0;
+
+            // 2. Processar Itens (Validar Preços no Servidor)
+            foreach (var itemDto in dto.Itens)
+            {
+                // Vamos à BD buscar o produto REAL para garantir que o preço está certo
+                var produtoDb = await _context.Produtos.FindAsync(itemDto.ProdutoId);
+
+                if (produtoDb == null) continue; // Produto não existe, salta fora
+
+                // Calcula o preço com base no que está na BD (Segurança)
+                decimal precoFinal = produtoDb.Preco;
+
+                var novoItem = new EncomendaItem
+                {
+                    ProdutoId = produtoDb.Id,
+                    Quantidade = itemDto.Quantidade,
+                    PrecoUnitario = precoFinal
+                };
+
+                novaEncomenda.Itens.Add(novoItem);
+                totalCalculado += (precoFinal * itemDto.Quantidade);
+            }
+
+            novaEncomenda.Total = totalCalculado;
+
+            // 3. Guardar na BD
+            _context.Encomendas.Add(novaEncomenda);
             await _context.SaveChangesAsync();
 
-            return Ok(encomenda);
+            // Retorna o ID da encomenda criada ou o objeto completo mapeado
+            return Ok(new { EncomendaId = novaEncomenda.Id });
         }
 
         // GET: api/encomendas/{clienteId}
         [HttpGet("{clienteId}")]
-        public async Task<ActionResult<List<Encomenda>>> ObterHistorico(int clienteId)
+        public async Task<ActionResult<List<EncomendaDTO>>> ObterHistorico(string clienteId)
         {
-            var encomendas = await _context.Encomendas
-                .Include(e => e.itens) 
-                .ThenInclude(i => i.Produto) 
-                .Where(e => e.Id_Cliente == clienteId)
+            // 1. Buscar dados à BD
+            var encomendasDb = await _context.Encomendas
+                .Include(e => e.Itens)      // Atenção: Usei 'Itens' (Maiúscula)
+                .ThenInclude(i => i.Produto)
+                .Where(e => e.ClienteId == clienteId) // Comparação de strings
                 .OrderByDescending(e => e.Data_Encomenda)
                 .ToListAsync();
 
-            if (encomendas == null || !encomendas.Any())
-                return NotFound("Nenhuma encomenda encontrada para este cliente.");
+            if (encomendasDb == null || !encomendasDb.Any())
+                return Ok(new List<EncomendaDTO>());
 
-            return Ok(encomendas);
+            // 2. Mapear Entidade -> DTO (Para evitar JSON Cycle e enviar dados limpos)
+            var listaDto = encomendasDb.Select(e => new EncomendaDTO
+            {
+                Id = e.Id,
+                Data_Encomenda = e.Data_Encomenda,
+                Total = e.Total,
+                Estado = e.Estado.ToString(), // Envia "Pendente" em vez de 0
+                Itens = e.Itens.Select(i => new EncomendaItemDTO
+                {
+                    NomeProduto = i.Produto.Nome,
+                    Quantidade = i.Quantidade,
+                    PrecoUnitario = i.PrecoUnitario
+                }).ToList()
+            }).ToList();
+
+            return Ok(listaDto);
+        }
+
+        [HttpGet("fornecedor/{fornecedorId}/vendas")]
+        public async Task<ActionResult<List<VendaFornecedorDTO>>> GetVendasFornecedor(string fornecedorId)
+        {
+            var vendas = await _context.EncomendaItems
+                .Include(ei => ei.Produto)
+                .Include(ei => ei.Encomenda)
+                .Where(ei => ei.Produto.FornecedorId == fornecedorId) 
+                .OrderByDescending(ei => ei.Encomenda.Data_Encomenda)
+                .Select(ei => new VendaFornecedorDTO
+                {
+                    DataVenda = ei.Encomenda.Data_Encomenda,
+                    NomeProduto = ei.Produto.Nome,
+                    Quantidade = ei.Quantidade,
+                    PrecoUnitario = ei.PrecoUnitario,
+                    Total = ei.Quantidade * ei.PrecoUnitario
+                })
+                .ToListAsync();
+
+            return Ok(vendas);
         }
 
     }

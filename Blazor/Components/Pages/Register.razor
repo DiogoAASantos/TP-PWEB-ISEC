@@ -1,6 +1,8 @@
 ﻿@using RCL.Data.DTO
 @using RCL.Data.DTO.Auth
 @using RCL.Data.Services
+@using RCL.Data.Model
+@using RCL.Data.Model.Enums
 
 @inject AuthService Auth
 @inject NavigationManager Nav
@@ -32,8 +34,8 @@
 </EditForm>
 
 @code {
-    private RegisterDTO model = new();   // <-- FORM MODEL
-    private string? error;              // <-- ERROR MESSAGE
+    private RegisterDTO model = new();  
+    private string? error;              
 
     private async Task HandleRegister()
     {

@@ -1,4 +1,5 @@
-﻿using RCL.Data.Model;
+﻿using RCL.Data.DTO;
+using RCL.Data.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace RCL.Data.Interfaces
         Task<Encomenda> EfetivarCompraAsync();
 
         // Consultar histórico de encomendas
-        Task<List<Encomenda>> ConsultarHistoricoAsync(int clienteId);
+        Task<List<Encomenda>> ConsultarHistoricoAsync(string clienteId);
+        Task<List<VendaFornecedorDTO>> ObterVendasDoFornecedorAsync(string fornecedorId);
     }
 }

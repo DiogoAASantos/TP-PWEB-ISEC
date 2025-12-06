@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
 using System.Net.Http.Json;
+using RCL.Data.Model.Enums;
 
 namespace RCL.Data.Services
 {
@@ -56,7 +57,7 @@ namespace RCL.Data.Services
         }
 
         // Inserir novo produto
-        public async Task<Produto> InserirProdutoAsync(int fornecedorId, Produto produto)
+        public async Task<Produto> InserirProdutoAsync(string fornecedorId, Produto produto)
         {
             produto.FornecedorId = fornecedorId;
             produto.Estado = EstadoProduto.PendenteAprovacao;
@@ -68,14 +69,14 @@ namespace RCL.Data.Services
         }
 
         // Consultar produtos do fornecedor
-        public async Task<List<Produto>> ConsultarProdutosAsync(int fornecedorId)
+        public async Task<List<Produto>> ConsultarProdutosAsync(string fornecedorId)
         {
             return await _http.GetFromJsonAsync<List<Produto>>($"/api/fornecedores/{fornecedorId}/produtos")
                    ?? new List<Produto>();
         }
 
         // Editar produto
-        public async Task<Produto?> EditarProdutoAsync(int fornecedorId, Produto produtoAtualizado)
+        public async Task<Produto?> EditarProdutoAsync(string fornecedorId, Produto produtoAtualizado)
         {
             var response = await _http.PutAsJsonAsync($"/api/fornecedores/{fornecedorId}/produtos/{produtoAtualizado.Id}", produtoAtualizado);
             if (!response.IsSuccessStatusCode) return null;
@@ -84,7 +85,7 @@ namespace RCL.Data.Services
         }
 
         // Alterar estado do produto
-        public async Task<bool> AlterarEstadoProdutoAsync(int fornecedorId, int produtoId, EstadoProduto novoEstado)
+        public async Task<bool> AlterarEstadoProdutoAsync(string fornecedorId, int produtoId, EstadoProduto novoEstado)
         {
             var response = await _http.PatchAsync($"/api/fornecedores/{fornecedorId}/produtos/{produtoId}/estado?novoEstado={novoEstado}", null);
             return response.IsSuccessStatusCode;

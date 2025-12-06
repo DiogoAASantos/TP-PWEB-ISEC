@@ -1,5 +1,4 @@
-﻿using API.DTOs.Auth;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using RCL.Data.DTO.Auth;
 using RCL.Data.Interfaces;
 using RCL.Data.Model;
@@ -18,7 +17,7 @@ namespace RCL.Data.Services
 
             public AuthService(HttpClient http) => _http = http;
 
-        public async Task<UserDto?> LoginAsync(LoginDTO dto)
+        public async Task<UserDTO?> LoginAsync(LoginDTO dto)
         {
             var response = await _http.PostAsJsonAsync("/api/auth/login", dto);
 
@@ -26,7 +25,7 @@ namespace RCL.Data.Services
                 return null; // login falhou
 
             // Ler o utilizador autenticado vindo do backend
-            var user = await response.Content.ReadFromJsonAsync<UserDto>();
+            var user = await response.Content.ReadFromJsonAsync<UserDTO>();
             return user;
         }
 

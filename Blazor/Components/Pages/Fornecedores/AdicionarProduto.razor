@@ -1,57 +1,125 @@
 ﻿@page "/fornecedor/produtos/novo"
 
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
 @using RCL.Data.Model
 @using RCL.Data.Interfaces
+@using RCL.Data.Model.Enums;
+
+@attribute [Authorize(Roles = "Fornecedor")]
+
 @inject IProdutoService ProdutoService
+@inject AuthenticationStateProvider AuthProvider
 @inject NavigationManager Nav
 
 <h3>Adicionar Novo Produto</h3>
 
-@if (error != null)
+@if (!string.IsNullOrEmpty(errorMessage))
 {
-    <p style="color:red">@error</p>
+    <div class="alert alert-danger">@errorMessage</div>
 }
 
-<EditForm Model="@novoProduto" OnValidSubmit="AddProduto">
-    <InputText @bind-Value="novoProduto.Nome" placeholder="Nome do Produto" />
-    <InputTextArea @bind-Value="novoProduto.Descricao" placeholder="Descrição" />
-    <InputNumber @bind-Value="novoProduto.Preco" placeholder="Preço" />
-    <InputNumber @bind-Value="novoProduto.Stock" placeholder="Stock" />
+<div class="card p-3">
 
-    <select @bind="novoProduto.Tipo">
-        <option value="Colecionavel">Colecionável</option>
-        <option value="Complemento">Complemento</option>
-    </select>
+    @* Nome *@
+    <div class="mb-3">
+        <label class="form-label">Nome</label>
+        <input class="form-control" @bind="novoProduto.Nome" placeholder="Nome do produto" />
+    </div>
 
-    <select @bind="novoProduto.Categoria">
-        <option value="Categoria1">Categoria 1</option>
-        <option value="Categoria2">Categoria 2</option>
-        <!-- Adicionar outras categorias -->
-    </select>
+    @* Descrição *@
+    <div class="mb-3">
+        <label class="form-label">Descrição</label>
+        <textarea class="form-control" @bind="novoProduto.Descricao" rows="3"></textarea>
+    </div>
 
-    <button type="submit" class="btn btn-primary">Adicionar Produto</button>
-</EditForm>
+    <div class="row">
+        @* Preço *@
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Preço Base (€)</label>
+            <input type="number" class="form-control" @bind="novoProduto.Preco" step="0.01" />
+        </div>
+
+        @* Stock *@
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Stock Inicial</label>
+            <input type="number" class="form-control" @bind="novoProduto.Stock" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Tipo</label>
+        <select class="form-control" @bind="novoProduto.Tipo">
+            <option value="@TipoProduto.Colecionavel">Colecionável</option>
+            <option value="@TipoProduto.Complemento">Complemento</option>
+        </select>
+    </div>
+
+    @* <div class="mb-3">
+        <label class="form-label">Categoria (ID)</label>
+        <input type="number" class="form-control" @bind="novoProduto.CategoriaId" />
+    </div> *@
+
+    <div class="mt-3">
+        <button class="btn btn-primary" @onclick="SubmeterFormulario">Submeter</button>
+        <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+    </div>
+
+</div>
 
 @code {
-    private Produto novoProduto = new Produto();
-    private string? error;
-
-    private async Task AddProduto()
+    private Produto novoProduto = new Produto
     {
-        error = null;
+        Nome = "",
+        Descricao = "",
+        Estado = EstadoProduto.PendenteAprovacao,
+        Tipo = TipoProduto.Colecionavel
+    };
+
+    private string? errorMessage;
+
+    private async Task SubmeterFormulario()
+    {
+        errorMessage = null;
+
+        if (string.IsNullOrWhiteSpace(novoProduto.Nome))
+        {
+            errorMessage = "O nome é obrigatório.";
+            return;
+        }
+        if (novoProduto.Preco <= 0)
+        {
+            errorMessage = "O preço tem de ser maior que zero.";
+            return;
+        }
 
         try
         {
-            // TODO: Substituir fornecedorId pelo fornecedor logado
-            int fornecedorId = 1;
+            var authState = await AuthProvider.GetAuthenticationStateAsync();
+            var userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
-            var produtoCriado = await ProdutoService.InserirProdutoAsync(fornecedorId, novoProduto);
+            if (string.IsNullOrEmpty(userId))
+            {
+                errorMessage = "Sessão inválida. Faça login novamente.";
+                return;
+            }
+
+            novoProduto.FornecedorId = userId;
+            novoProduto.Estado = EstadoProduto.PendenteAprovacao;
+
+            await ProdutoService.InserirProdutoAsync(userId, novoProduto);
 
             Nav.NavigateTo("/fornecedor/home");
         }
         catch (Exception ex)
         {
-            error = "Erro ao adicionar produto: " + ex.Message;
+            errorMessage = "Erro ao guardar: " + ex.Message;
         }
+    }
+
+    private void Cancelar()
+    {
+        Nav.NavigateTo("/fornecedor/home");
     }
 }

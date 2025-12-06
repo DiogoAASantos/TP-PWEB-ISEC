@@ -6,36 +6,31 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using RCL.Data.DTO.Auth;
+using RCL.Data.DTO;
 
 namespace RCL.Data.Interfaces
 {
     public class FornecedorService : IFornecedorService
     {
         private readonly HttpClient _http;
+        private UserDTO? _fornecedorLogado;
 
         public FornecedorService(HttpClient http)
         {
             _http = http;
         }
 
-        private Fornecedor? _fornecedorLogado;
-
-        public void SetCliente(UserDto fornecedor)
+        public void SetFornecedor(UserDTO fornecedor)
         {
-            _fornecedorLogado = new Fornecedor
-            {
-                Id = fornecedor.Id,
-                Email = fornecedor.Email,
-                Nome = fornecedor.Nome
-            };
+            _fornecedorLogado = fornecedor;
         }
 
         // Consultar histórico de vendas
-        public async Task<List<Encomenda>> ConsultarHistoricoVendasAsync(int fornecedorId)
+        public async Task<List<VendaFornecedorDTO>> ObterVendasDoFornecedorAsync(string fornecedorId)
         {
             // Chama a API para obter todas as encomendas que contenham produtos deste fornecedor
-            return await _http.GetFromJsonAsync<List<Encomenda>>($"/api/fornecedores/{fornecedorId}/vendas")
-                   ?? new List<Encomenda>();
+            return await _http.GetFromJsonAsync<List<VendaFornecedorDTO>>($"/api/fornecedores/{fornecedorId}/vendas")
+                   ?? new List<VendaFornecedorDTO>();
         }
     }
 }
