@@ -1,7 +1,8 @@
 ﻿using Android.App;
 using Android.Runtime;
+using MyColl.MAUI;
 
-namespace UtilidadesMAUI
+namespace MyColl.MAUI
 {
     [Application]
     public class MainApplication : MauiApplication

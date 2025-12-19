@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\MyColl.MAUI.props" />
-</Project>

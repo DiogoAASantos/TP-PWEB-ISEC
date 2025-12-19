@@ -10,7 +10,7 @@ namespace RCL.Data.Model
 {
     public class Produto
     {
-        public int Id { get; set; }
+        public string Id { get; set; } = string.Empty;
         public string FornecedorId { get; set; } = string.Empty;
         
         [ForeignKey("FornecedorId")] 
@@ -23,7 +23,11 @@ namespace RCL.Data.Model
         public EstadoProduto Estado { get; set; }
         public DisponibilidadeProduto Disponibilidade { get; set; }
         public TipoProduto Tipo { get; set; }
-        public Categoria Categoria { get; set; } = new Categoria();
+        
+        public int CategoriaId { get; set; }
+
+        [ForeignKey("CategoriaId")]
+        public Categoria? Categoria { get; set; }
 
 
     }

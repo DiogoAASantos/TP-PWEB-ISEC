@@ -27,61 +27,9 @@ namespace RCL.Data.Interfaces
             _clienteLogado = cliente;
         }
 
-        public void AdicionarAoCarrinho(Produto produto, int quantidade)
-        {
-            var item = Carrinho.FirstOrDefault(x => x.ProdutoId == produto.Id);
-            if (item != null)
-            {
-                item.Quantidade += quantidade;
-            }
-            else
-            {
-                Carrinho.Add(new CarrinhoItemDTO
-                {
-                    ProdutoId = produto.Id,
-                    Nome = produto.Nome,
-                    Preco = produto.Preco,
-                    Quantidade = quantidade
-                });
-            }
-        }
-
-        public void RemoverDoCarrinho(int produtoId)
-        {
-            var item = Carrinho.FirstOrDefault(x => x.ProdutoId == produtoId);
-            if (item != null) Carrinho.Remove(item);
-        }
-
         public decimal ObterTotal()
         {
             return Carrinho.Sum(x => x.Preco * x.Quantidade);
-        }
-
-        // Efetivar compra: transforma o carrinho em encomenda
-        public async Task<Encomenda> EfetivarCompraAsync()
-        {
-            if (_clienteLogado == null)
-                throw new InvalidOperationException("Utilizador não autenticado.");
-
-            if (!Carrinho.Any())
-                throw new InvalidOperationException("Carrinho vazio.");
-
-            // Cria o "Pacote" para a API (ID do Cliente + Lista de Itens)
-            var encomendaDto = new CriarEncomendaDTO
-            {
-                ClienteId = _clienteLogado.Id, 
-                Itens = Carrinho
-            };
-
-            var response = await _http.PostAsJsonAsync("/api/encomendas", encomendaDto);
-            response.EnsureSuccessStatusCode();
-
-            var encomendaCriada = await response.Content.ReadFromJsonAsync<Encomenda>();
-
-            // Limpar carrinho local após sucesso
-            Carrinho.Clear();
-
-            return encomendaCriada!;
         }
 
         // Registar-se como cliente (estado Pendente)

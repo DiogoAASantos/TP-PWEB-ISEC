@@ -43,7 +43,7 @@ namespace API.Controllers
 
         // GET: api/fornecedores/{fornecedorId}/produtos/{produtoId}
         [HttpGet("{fornecedorId}/produtos/{produtoId}")]
-        public async Task<ActionResult<Produto>> ConsultarProduto(string fornecedorId, int produtoId)
+        public async Task<ActionResult<Produto>> ConsultarProduto(string fornecedorId, string produtoId)
         {
             var produto = await _context.Produtos
                 .FirstOrDefaultAsync(p => p.FornecedorId == fornecedorId && p.Id == produtoId);
@@ -54,7 +54,7 @@ namespace API.Controllers
 
         // PUT: api/fornecedores/{fornecedorId}/produtos/{produtoId}
         [HttpPut("{fornecedorId}/produtos/{produtoId}")]
-        public async Task<ActionResult<Produto?>> EditarProduto(string fornecedorId, int produtoId, [FromBody] Produto produtoAtualizado)
+        public async Task<ActionResult<Produto?>> EditarProduto(string fornecedorId, string produtoId, [FromBody] Produto produtoAtualizado)
         {
             var produto = await _context.Produtos
                 .FirstOrDefaultAsync(p => p.FornecedorId == fornecedorId && p.Id == produtoId);
@@ -63,9 +63,9 @@ namespace API.Controllers
 
             produto.Nome = produtoAtualizado.Nome;
             produto.Descricao = produtoAtualizado.Descricao;
-            produto.PrecoBase = produtoAtualizado.PrecoBase;
+            produto.Preco = produtoAtualizado.Preco;
             produto.Categoria = produtoAtualizado.Categoria;
-            produto.SubCategoria = produtoAtualizado.SubCategoria;
+            //produto.SubCategoria = produtoAtualizado.SubCategoria;
             produto.Disponibilidade = produtoAtualizado.Disponibilidade;
 
             // Após edição, produto volta para pendente aprovação
@@ -79,7 +79,7 @@ namespace API.Controllers
 
         // PATCH: api/fornecedores/{fornecedorId}/produtos/{produtoId}/estado
         [HttpPatch("{fornecedorId}/produtos/{produtoId}/estado")]
-        public async Task<ActionResult> AlterarEstadoProduto(string fornecedorId, int produtoId, [FromQuery] EstadoProduto novoEstado)
+        public async Task<ActionResult> AlterarEstadoProduto(string fornecedorId, string produtoId, [FromQuery] EstadoProduto novoEstado)
         {
             var produto = await _context.Produtos
                 .FirstOrDefaultAsync(p => p.FornecedorId == fornecedorId && p.Id == produtoId);

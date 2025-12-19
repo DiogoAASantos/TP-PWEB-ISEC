@@ -1,24 +1,24 @@
 {
   "Files": [
     {
-      "Id": "C:\\Users\\diogo\\OneDrive\\Ambiente de Trabalho\\Diogo\\ISEC\\3º Ano\\1º Semestre\\PWEB\\Trabalho Prático\\Projeto\\MyColl\\RCL\\wwwroot\\app.css",
+      "Id": "C:\\PWEB\\Projeto\\MyColl\\RCL\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\RCL.bundle.scp.css",
+      "PackagePath": "staticwebassets\\RCL.bundle.scp.css"
+    },
+    {
+      "Id": "C:\\PWEB\\Projeto\\MyColl\\RCL\\wwwroot\\app.css",
       "PackagePath": "staticwebassets\\app.css"
     },
     {
-      "Id": "C:\\Users\\diogo\\OneDrive\\Ambiente de Trabalho\\Diogo\\ISEC\\3º Ano\\1º Semestre\\PWEB\\Trabalho Prático\\Projeto\\MyColl\\RCL\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "Id": "C:\\PWEB\\Projeto\\MyColl\\RCL\\wwwroot\\bootstrap\\bootstrap.min.css",
       "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
     },
     {
-      "Id": "C:\\Users\\diogo\\OneDrive\\Ambiente de Trabalho\\Diogo\\ISEC\\3º Ano\\1º Semestre\\PWEB\\Trabalho Prático\\Projeto\\MyColl\\RCL\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "Id": "C:\\PWEB\\Projeto\\MyColl\\RCL\\wwwroot\\bootstrap\\bootstrap.min.css.map",
       "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
     },
     {
-      "Id": "C:\\Users\\diogo\\OneDrive\\Ambiente de Trabalho\\Diogo\\ISEC\\3º Ano\\1º Semestre\\PWEB\\Trabalho Prático\\Projeto\\MyColl\\RCL\\wwwroot\\favicon.png",
+      "Id": "C:\\PWEB\\Projeto\\MyColl\\RCL\\wwwroot\\favicon.png",
       "PackagePath": "staticwebassets\\favicon.png"
-    },
-    {
-      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.RCL.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
-      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.RCL.Microsoft.AspNetCore.StaticWebAssets.props",

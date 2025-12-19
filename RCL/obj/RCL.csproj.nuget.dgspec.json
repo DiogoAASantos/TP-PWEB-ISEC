@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\diogo\\OneDrive\\Ambiente de Trabalho\\Diogo\\ISEC\\3º Ano\\1º Semestre\\PWEB\\Trabalho Prático\\Projeto\\MyColl\\RCL\\RCL.csproj": {}
+    "C:\\PWEB\\Projeto\\MyColl\\RCL\\RCL.csproj": {}
   },
   "projects": {
-    "C:\\Users\\diogo\\OneDrive\\Ambiente de Trabalho\\Diogo\\ISEC\\3º Ano\\1º Semestre\\PWEB\\Trabalho Prático\\Projeto\\MyColl\\RCL\\RCL.csproj": {
+    "C:\\PWEB\\Projeto\\MyColl\\RCL\\RCL.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\diogo\\OneDrive\\Ambiente de Trabalho\\Diogo\\ISEC\\3º Ano\\1º Semestre\\PWEB\\Trabalho Prático\\Projeto\\MyColl\\RCL\\RCL.csproj",
+        "projectUniqueName": "C:\\PWEB\\Projeto\\MyColl\\RCL\\RCL.csproj",
         "projectName": "RCL",
-        "projectPath": "C:\\Users\\diogo\\OneDrive\\Ambiente de Trabalho\\Diogo\\ISEC\\3º Ano\\1º Semestre\\PWEB\\Trabalho Prático\\Projeto\\MyColl\\RCL\\RCL.csproj",
+        "projectPath": "C:\\PWEB\\Projeto\\MyColl\\RCL\\RCL.csproj",
         "packagesPath": "C:\\Users\\diogo\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\diogo\\OneDrive\\Ambiente de Trabalho\\Diogo\\ISEC\\3º Ano\\1º Semestre\\PWEB\\Trabalho Prático\\Projeto\\MyColl\\RCL\\obj\\",
+        "outputPath": "C:\\PWEB\\Projeto\\MyColl\\RCL\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -44,26 +44,31 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.300"
+        }
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
-            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+            "Blazored.LocalStorage": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "Microsoft.AspNetCore.Components.Authorization": {
               "target": "Package",
               "version": "[8.0.0, )"
             },
-            "Microsoft.EntityFrameworkCore.SqlServer": {
+            "Microsoft.AspNetCore.Components.Web": {
               "target": "Package",
               "version": "[8.0.0, )"
             },
-            "Microsoft.EntityFrameworkCore.Tools": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
+            "Microsoft.Extensions.Identity.Stores": {
               "target": "Package",
               "version": "[8.0.0, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[7.1.2, )"
             }
           },
           "imports": [
@@ -78,14 +83,11 @@
           "assetTargetFallback": true,
           "warn": true,
           "frameworkReferences": {
-            "Microsoft.AspNetCore.App": {
-              "privateAssets": "none"
-            },
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.308/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.416/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

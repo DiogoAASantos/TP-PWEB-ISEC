@@ -14,7 +14,7 @@ namespace API.Data
         public DbSet<Produto> Produtos { get; set; }
         public DbSet<Encomenda> Encomendas { get; set; }
         public DbSet<EncomendaItem> EncomendaItems { get; set; }
-
+        public DbSet<CarrinhoItem> CarrinhoItens { get; set; }
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Fornecedor> Fornecedores { get; set; }
 
@@ -50,7 +50,31 @@ namespace API.Data
                 .HasForeignKey(ei => ei.ProdutoId)
                 .OnDelete(DeleteBehavior.Restrict); // Não apaga o item do histórico se o produto for apagado da loja
 
-           
+            builder.Entity<CarrinhoItem>()
+                .HasOne(ci => ci.Cliente)
+                .WithMany() // Assumindo que Cliente não tem lista 'Carrinho', é unidirecional
+                .HasForeignKey(ci => ci.ClienteId)
+                .OnDelete(DeleteBehavior.Cascade); // Se apagar o Cliente, apaga o carrinho
+
+            builder.Entity<CarrinhoItem>()
+                .HasOne(ci => ci.Produto)
+                .WithMany()
+                .HasForeignKey(ci => ci.ProdutoId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configuração da Categoria (Auto-Relacionamento)
+            builder.Entity<Categoria>()
+                .HasOne(c => c.CategoriaPai)
+                .WithMany(c => c.SubCategorias)
+                .HasForeignKey(c => c.CategoriaPaiId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Produto>()
+                .HasOne(p => p.Categoria)
+                .WithMany(c => c.Produtos)
+                .HasForeignKey(p => p.CategoriaId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // Define que os campos monetários têm 18 dígitos, sendo 2 casas decimais
             builder.Entity<Produto>()
                 .Property(p => p.Preco)

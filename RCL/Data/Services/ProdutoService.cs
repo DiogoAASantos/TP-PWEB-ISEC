@@ -1,13 +1,14 @@
-﻿using RCL.Data.Model;
-using RCL.Data.Interfaces;
+﻿using RCL.Data.Interfaces;
+using RCL.Data.Model;
+using RCL.Data.Model.Enums;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
-using System.Net.Http.Json;
-using RCL.Data.Model.Enums;
 
 namespace RCL.Data.Services
 {
@@ -28,25 +29,39 @@ namespace RCL.Data.Services
 
 
         // Listar produtos por categoria, subcategoria, preço e disponibilidade
-        public async Task<List<Produto>> ListarProdutosPorCategoriaAsync(string categoria, string? subcategoria = null,
+        public async Task<List<Produto>> ListarProdutosPorCategoriaAsync(int categoriaId, int? subcategoriaId = null,
                                                                          decimal? precoMin = null,
                                                                          decimal? precoMax = null,
                                                                          DisponibilidadeProduto? disponibilidade = null)
         {
-            var url = $"/api/produto?categoria={Uri.EscapeDataString(categoria)}";
+            // 1. URL Base com o ID obrigatório da Categoria
+            // Nota: A rota deve bater certo com o "HttpGet("listar")" que definimos na API
+            var url = $"api/produtos/listar?categoriaId={categoriaId}";
 
-            if (!string.IsNullOrWhiteSpace(subcategoria))
-                url += $"&subcategoria={Uri.EscapeDataString(subcategoria)}";
+            // 2. Subcategoria (Agora é INT, verificamos se tem valor)
+            if (subcategoriaId.HasValue)
+            {
+                url += $"&subcategoriaId={subcategoriaId.Value}";
+            }
 
+            // 3. Preços (Formatados com PONTO para não dar erro de URL)
             if (precoMin.HasValue)
-                url += $"&precoMin={precoMin.Value}";
+            {
+                url += $"&precoMin={precoMin.Value.ToString(CultureInfo.InvariantCulture)}";
+            }
 
             if (precoMax.HasValue)
-                url += $"&precoMax={precoMax.Value}";
+            {
+                url += $"&precoMax={precoMax.Value.ToString(CultureInfo.InvariantCulture)}";
+            }
 
+            // 4. Disponibilidade (Enum enviado como Inteiro)
             if (disponibilidade.HasValue)
-                url += $"&disponibilidade={disponibilidade.Value}";
+            {
+                url += $"&disponibilidade={(int)disponibilidade.Value}";
+            }
 
+            // 5. Chamada à API
             return await _http.GetFromJsonAsync<List<Produto>>(url) ?? new List<Produto>();
         }
 
@@ -85,13 +100,13 @@ namespace RCL.Data.Services
         }
 
         // Alterar estado do produto
-        public async Task<bool> AlterarEstadoProdutoAsync(string fornecedorId, int produtoId, EstadoProduto novoEstado)
+        public async Task<bool> AlterarEstadoProdutoAsync(string fornecedorId, string produtoId, EstadoProduto novoEstado)
         {
             var response = await _http.PatchAsync($"/api/fornecedores/{fornecedorId}/produtos/{produtoId}/estado?novoEstado={novoEstado}", null);
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<Produto?> ObterProdutoPorIdAsync(int produtoId)
+        public async Task<Produto?> ObterProdutoPorIdAsync(string produtoId)
         {
             return await _http.GetFromJsonAsync<Produto>($"/api/produtos/{produtoId}");
         }

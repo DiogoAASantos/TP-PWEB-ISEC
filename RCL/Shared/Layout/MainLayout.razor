@@ -1,0 +1,59 @@
+﻿@inherits LayoutComponentBase
+@inject IAuthService AuthService
+@inject NavigationManager Nav
+
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4 bg-white border-bottom shadow-sm">
+            <AuthorizeView>
+                <Authorized>
+                    <span class="me-3 text-dark"> <b>Olá!</b> </span>
+                    <a href="logout" class="btn btn-sm btn-outline-danger" @onclick=LogoutUser>Sair</a>
+                </Authorized>
+            </AuthorizeView>
+        </div>
+
+        <article class="content px-4 py-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationStateTask { get; set; }
+
+    private string displayName;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (authenticationStateTask != null)
+        {
+            var authState = await authenticationStateTask;
+            var user = authState.User;
+
+            if (user.Identity != null && user.Identity.IsAuthenticated)
+            {
+                displayName = user.FindFirst("username")?.Value;
+            }
+            else
+            {
+                displayName = "Amigo";
+            }
+        }
+    }
+
+    private async Task LogoutUser()
+    {
+        await AuthService.LogoutAsync();
+        Nav.NavigateTo("/", forceLoad: true);
+    }
+}

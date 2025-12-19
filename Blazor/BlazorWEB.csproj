@@ -3,6 +3,14 @@
   <ItemGroup>
 	<ProjectReference Include="..\RCL\RCL.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
 	
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>

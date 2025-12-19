@@ -1,4 +1,5 @@
-﻿using RCL.Data.DTO;
+﻿using Microsoft.AspNetCore.Components.Authorization;
+using RCL.Data.DTO;
 using RCL.Data.DTO.CarrinhoDTOs;
 using RCL.Data.Interfaces;
 using RCL.Data.Model;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Json;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,42 +16,66 @@ namespace RCL.Data.Services
     public class CarrinhoService : ICarrinhoService
     {
         private readonly HttpClient _http;
-        private readonly string _userId;
+        private readonly AuthenticationStateProvider _authenticationStateProvider;
 
-        public CarrinhoService(HttpClient http, string userId)
+        private List<CarrinhoItem> _carrinhoLocal = new();
+        public IReadOnlyList<CarrinhoItem> Carrinho => _carrinhoLocal.AsReadOnly();
+
+        public CarrinhoService(HttpClient http, AuthenticationStateProvider authenticationStateProvider)
         {
             _http = http;
-            _userId = userId;
+            _authenticationStateProvider = authenticationStateProvider;
+        }
+
+        private async Task<string> GetUserIdAsync()
+        {
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new UnauthorizedAccessException("O utilizador não está autenticado.");
+            }
+            return userId;
         }
 
         public async Task<List<CarrinhoItem>> ObterItensAsync()
         {
-            var carrinhoDto = await _http.GetFromJsonAsync<CarrinhoDTO>($"api/carrinho/{_userId}");
-            var itens = new List<CarrinhoItem>();
+            string userId = await GetUserIdAsync(); 
+            var carrinhoDto = await _http.GetFromJsonAsync<CarrinhoDTO>($"api/carrinho/");
+
+            _carrinhoLocal.Clear();
 
             if (carrinhoDto?.Itens != null)
             {
                 foreach (var dto in carrinhoDto.Itens)
                 {
-                    // Aqui podes fazer outra chamada para obter Produto completo se necessário
-                    itens.Add(new CarrinhoItem
+                    var novoItem = new CarrinhoItem
                     {
-                        UserId = _userId,
+                        ClienteId = userId,
                         ProdutoId = dto.ProdutoId,
                         Quantidade = dto.Quantidade,
-                        Produto = new Produto { Id = dto.ProdutoId, Nome = dto.Nome, Preco = dto.Preco } 
-                    });
+                        Produto = new Produto { Id = dto.ProdutoId, Nome = dto.Nome, Preco = dto.Preco }
+                    };
+
+                    _carrinhoLocal.Add(novoItem); 
                 }
             }
 
-            return itens;
+            return _carrinhoLocal; 
         }
 
-        public async Task AdicionarProdutoAsync(int produtoId, int quantidade = 1)
+        public void LimparCarrinhoLocal()
         {
+            _carrinhoLocal.Clear();
+        }
+
+        public async Task AdicionarProdutoAsync(string produtoId, int quantidade = 1)
+        {
+            string userId = await GetUserIdAsync();
             var dto = new AddCarrinhoDTO
             {
-                UserId = _userId,
+                UserId = userId,
                 ProdutoId = produtoId,
                 Quantidade = quantidade
             };
@@ -57,11 +83,12 @@ namespace RCL.Data.Services
             await _http.PostAsJsonAsync("api/carrinho/adicionar", dto);
         }
 
-        public async Task AtualizarQuantidadeAsync(int produtoId, int quantidade)
+        public async Task AtualizarQuantidadeAsync(string produtoId, int quantidade)
         {
+            string userId = await GetUserIdAsync();
             var dto = new UpdateCarrinhoDTO
             {
-                UserId = _userId,
+                UserId = userId,
                 ProdutoId = produtoId,
                 Quantidade = quantidade
             };
@@ -69,21 +96,10 @@ namespace RCL.Data.Services
             await _http.PutAsJsonAsync("api/carrinho/atualizar", dto);
         }
 
-        public async Task RemoverProdutoAsync(int produtoId)
+        public async Task RemoverProdutoAsync(string produtoId)
         {
-            await _http.DeleteAsync($"api/carrinho/{_userId}/{produtoId}");
-        }
-
-        public async Task<bool> FinalizarCompraAsync()
-        {
-            var response = await _http.PostAsync($"api/carrinho/finalizar/{_userId}", null);
-            return response.IsSuccessStatusCode;
-        }
-
-        public async Task LimparCarrinhoAsync()
-        {
-            var response = await _http.PostAsync($"api/carrinho/finalizar/{_userId}", null);
-            response.EnsureSuccessStatusCode();
+            string userId = await GetUserIdAsync();
+            await _http.DeleteAsync($"api/carrinho/{produtoId}");
         }
 
         public async Task<decimal> TotalAsync()

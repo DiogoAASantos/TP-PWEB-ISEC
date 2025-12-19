@@ -12,7 +12,6 @@ namespace RCL.Data.Interfaces
     public interface IClienteService
     {
         void SetCliente(UserDTO cliente);
-        Task<Encomenda> EfetivarCompraAsync();
         Task<Cliente> RegistarComoClienteAsync(Cliente novoCliente);
         Task<List<Encomenda>> ConsultarHistoricoComprasAsync(string clienteId);
     }

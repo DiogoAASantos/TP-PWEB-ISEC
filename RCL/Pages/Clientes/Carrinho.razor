@@ -1,0 +1,140 @@
+﻿@page "/carrinho"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@using Microsoft.AspNetCore.Components.Authorization
+@using RCL.Data.Model
+@using RCL.Data.Interfaces
+@using RCL.Data.Services
+
+@inject ICarrinhoService CarrinhoService
+
+@inject NavigationManager Nav
+
+<h2>Meu Carrinho</h2>
+
+@if (isLoading)
+{
+    <p><em>A carregar o carrinho...</em></p>
+}
+else if (!itensCarrinho.Any())
+{
+    <p>O carrinho está vazio.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Preço</th>
+                <th>Quantidade</th>
+                <th>Total</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in itensCarrinho)
+            {
+                <tr>
+                    <td>@item.Produto.Nome</td>
+                    <td>@item.Produto.Preco €</td>
+
+                    <td>
+                        <input type="number" min="1" value="@item.Quantidade"
+                               @onchange="((e) => AtualizarQuantidade(item.Produto.Id, int.Parse(e.Value?.ToString()!)))" />
+                    </td>
+
+                    <td>@(item.Produto.Preco* item.Quantidade) €</td>
+
+                    <td>
+                        <button class="btn btn-sm btn-danger" @onclick="() => RemoverItem(item.Produto.Id)">
+                            Remover
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <p><strong>Total:</strong> @totalCarrinho €</p>
+
+    <button class="btn btn-success" @onclick="IrParaCheckout">Finalizar Compra</button>
+}
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    private List<CarrinhoItem> itensCarrinho = new();
+    private decimal totalCarrinho = 0;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (AuthStateTask != null)
+            {
+                var authState = await AuthStateTask;
+                var user = authState.User;
+
+                if (user.Identity is { IsAuthenticated: true })
+                {
+                    await LoadCarrinhoData();
+                }
+                else
+                {
+                    Nav.NavigateTo("/login");
+                }
+            }
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadCarrinhoData()
+    {
+        try
+        {
+            itensCarrinho = await CarrinhoService.ObterItensAsync();
+            totalCarrinho = await CarrinhoService.TotalAsync();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            Nav.NavigateTo("/login");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao carregar carrinho: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task AtualizarQuantidade(string produtoId, int novaQuantidade)
+    {
+        if (novaQuantidade > 0)
+        {
+            await CarrinhoService.AtualizarQuantidadeAsync(produtoId, novaQuantidade);
+            await LoadCarrinhoData();
+        }
+    }
+
+    private async Task RemoverItem(string produtoId)
+    {
+        await CarrinhoService.RemoverProdutoAsync(produtoId);
+        await LoadCarrinhoData();
+    }
+
+    private void IrParaCheckout()
+    {
+        Nav.NavigateTo("/checkout");
+    }
+}

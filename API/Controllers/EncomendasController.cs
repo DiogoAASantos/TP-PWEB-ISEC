@@ -1,9 +1,11 @@
 ﻿using API.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RCL.Data.DTO;
 using RCL.Data.DTO.EncomendasDTOs;
 using RCL.Data.Model;
+using System.Security.Claims;
 
 namespace API.Controllers
 {
@@ -19,20 +21,24 @@ namespace API.Controllers
         }
 
 
-        // POST: api/clientes/efetivar
         [HttpPost("efetivar")]
+        [Authorize(Roles = "Cliente")]
         public async Task<ActionResult<int>> EfetivarCompra([FromBody] CriarEncomendaDTO dto)
         {
-            if (dto.Itens == null || !dto.Itens.Any())
-                return BadRequest("Carrinho vazio.");
+            var clienteIdDoToken = User.FindFirst("nameid")?.Value;
 
-            if (string.IsNullOrEmpty(dto.ClienteId))
-                return BadRequest("ID do cliente inválido.");
+            if (string.IsNullOrEmpty(clienteIdDoToken))
+            {
+                return Unauthorized("ID do cliente não encontrado no token de autenticação.");
+            }
+
+            if (dto.Itens == null || !dto.Itens.Any())
+                return BadRequest("Carrinho vazio. Não é possível efetivar a compra.");
 
             // 1. Criar a nova Encomenda (esqueleto)
             var novaEncomenda = new Encomenda
             {
-                ClienteId = dto.ClienteId, // String (Identity)
+                ClienteId = clienteIdDoToken,
                 Data_Encomenda = DateTime.UtcNow,
                 Estado = EstadoEncomenda.Pendente,
                 Itens = new List<EncomendaItem>()
@@ -72,15 +78,20 @@ namespace API.Controllers
             return Ok(new { EncomendaId = novaEncomenda.Id });
         }
 
-        // GET: api/encomendas/{clienteId}
-        [HttpGet("{clienteId}")]
-        public async Task<ActionResult<List<EncomendaDTO>>> ObterHistorico(string clienteId)
+        [HttpGet("historico")]
+        [Authorize(Roles = "Cliente")]
+        public async Task<ActionResult<List<EncomendaDTO>>> ObterHistorico()
         {
+            var clienteIdDoToken = User.FindFirst("nameid")?.Value;
+
+            if (string.IsNullOrEmpty(clienteIdDoToken))
+                return Unauthorized("ID do cliente não encontrado no Token.");
+
             // 1. Buscar dados à BD
             var encomendasDb = await _context.Encomendas
                 .Include(e => e.Itens)      // Atenção: Usei 'Itens' (Maiúscula)
                 .ThenInclude(i => i.Produto)
-                .Where(e => e.ClienteId == clienteId) // Comparação de strings
+                .Where(e => e.ClienteId == clienteIdDoToken)
                 .OrderByDescending(e => e.Data_Encomenda)
                 .ToListAsync();
 
@@ -105,13 +116,19 @@ namespace API.Controllers
             return Ok(listaDto);
         }
 
-        [HttpGet("fornecedor/{fornecedorId}/vendas")]
-        public async Task<ActionResult<List<VendaFornecedorDTO>>> GetVendasFornecedor(string fornecedorId)
+        [HttpGet("fornecedor/vendas")] 
+        [Authorize(Roles = "Fornecedor")]
+        public async Task<ActionResult<List<VendaFornecedorDTO>>> GetVendasFornecedor()
         {
+            var fornecedorIdDoToken = User.FindFirst("nameid")?.Value;
+
+            if (string.IsNullOrEmpty(fornecedorIdDoToken))
+                return Unauthorized("ID do fornecedor não encontrado no Token.");
+
             var vendas = await _context.EncomendaItems
                 .Include(ei => ei.Produto)
                 .Include(ei => ei.Encomenda)
-                .Where(ei => ei.Produto.FornecedorId == fornecedorId) 
+                .Where(ei => ei.Produto.FornecedorId == fornecedorIdDoToken)
                 .OrderByDescending(ei => ei.Encomenda.Data_Encomenda)
                 .Select(ei => new VendaFornecedorDTO
                 {

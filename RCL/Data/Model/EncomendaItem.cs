@@ -11,8 +11,7 @@ namespace RCL.Data.Model
         public int Id { get; set; } 
         public int EncomendaId { get; set; } 
         public Encomenda Encomenda { get; set; } = null!;
-
-        public int ProdutoId { get; set; } 
+        public string ProdutoId { get; set; } = string.Empty;
         public Produto Produto { get; set; } = null!;
 
         public int Quantidade { get; set; }

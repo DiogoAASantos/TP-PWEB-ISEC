@@ -15,8 +15,8 @@ namespace RCL.Data.Interfaces
 
         // Listar produtos por filtros
         Task<List<Produto>> ListarProdutosPorCategoriaAsync(
-            string categoria,
-            string? subcategoria = null,
+            int categoriaId,
+            int? subcategoriaId = null,
             decimal? precoMin = null,
             decimal? precoMax = null,
             DisponibilidadeProduto? disponibilidade = null
@@ -35,7 +35,7 @@ namespace RCL.Data.Interfaces
         Task<Produto?> EditarProdutoAsync(string fornecedorId, Produto produtoAtualizado);
 
         // Alterar estado do produto (aprovado, pendente, rejeitado)
-        Task<bool> AlterarEstadoProdutoAsync(string fornecedorId, int produtoId, EstadoProduto novoEstado);
-        Task<Produto?> ObterProdutoPorIdAsync(int produtoId);
+        Task<bool> AlterarEstadoProdutoAsync(string fornecedorId, string produtoId, EstadoProduto novoEstado);
+        Task<Produto?> ObterProdutoPorIdAsync(string produtoId);
     }
 }

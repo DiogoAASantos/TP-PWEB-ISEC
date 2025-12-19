@@ -5,7 +5,7 @@ namespace RCL.Data.Model
 {
     public class ApplicationUser : IdentityUser
     {
-        public string? Nome { get; set; } // Nome próprio (ex: "João Silva")
+        public string? Nome { get; set; } 
 
         public EstadoUtilizador Estado { get; set; } = EstadoUtilizador.Pendente;
 

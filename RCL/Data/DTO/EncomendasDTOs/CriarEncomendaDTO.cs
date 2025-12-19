@@ -9,7 +9,6 @@ namespace RCL.Data.DTO.EncomendasDTOs
 {
     public class CriarEncomendaDTO
     {
-        public string ClienteId { get; set; } = string.Empty;
-        public List<CarrinhoItemDTO> Itens { get; set; } = new();
+        public List<EncomendaItemDTO> Itens { get; set; } = new();
     }
 }

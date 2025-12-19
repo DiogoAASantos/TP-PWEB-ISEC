@@ -1,38 +1,65 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Components.Authorization; 
 using RCL.Data.DTO.Auth;
 using RCL.Data.Interfaces;
-using RCL.Data.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
+using Blazored.LocalStorage; 
 
 namespace RCL.Data.Services
 {
-        public class AuthService : IAuthService
-        {
-            private readonly HttpClient _http;
+    public class AuthService : IAuthService
+    {
+        private readonly HttpClient _http;
+        private readonly AuthenticationStateProvider _authProvider;
+        private readonly ILocalStorageService _localStorage;
 
-            public AuthService(HttpClient http) => _http = http;
+        // Injetamos também o AuthenticationStateProvider
+        public AuthService(HttpClient http, AuthenticationStateProvider authProvider, ILocalStorageService localStorage)
+        {
+            _http = http;
+            _authProvider = authProvider;
+            _localStorage = localStorage;
+        }
 
         public async Task<UserDTO?> LoginAsync(LoginDTO dto)
         {
-            var response = await _http.PostAsJsonAsync("/api/auth/login", dto);
+            var response = await _http.PostAsJsonAsync("api/auth/login", dto);
 
             if (!response.IsSuccessStatusCode)
-                return null; // login falhou
+                return null;
 
-            // Ler o utilizador autenticado vindo do backend
             var user = await response.Content.ReadFromJsonAsync<UserDTO>();
+
+            if (user != null && !string.IsNullOrEmpty(user.Token))
+            {
+                // 1. Guardar no disco (LocalStorage)
+                await _localStorage.SetItemAsStringAsync("authToken", user.Token);
+
+                // 2. Dizer ao Blazor que o estado de autenticação mudou
+                if (_authProvider is CustomAuthProvider customAuth)
+                {
+                    customAuth.NotifyUserLoggedIn();
+                }
+            }
+
             return user;
         }
 
         public async Task<bool> RegisterAsync(RegisterDTO dto)
-            {
-            var res = await _http.PostAsJsonAsync("auth/register", dto);
+        {
+            var res = await _http.PostAsJsonAsync("api/auth/register", dto);
             return res.IsSuccessStatusCode;
+        }
+
+        public async Task LogoutAsync()
+        {
+            // 1. LIMPAR TUDO
+            await _localStorage.RemoveItemAsync("authToken");
+            _http.DefaultRequestHeaders.Authorization = null;
+
+            if (_authProvider is CustomAuthProvider customAuth)
+            {
+                customAuth.NotifyUserLoggedOut();
+            }
         }
     }
 }

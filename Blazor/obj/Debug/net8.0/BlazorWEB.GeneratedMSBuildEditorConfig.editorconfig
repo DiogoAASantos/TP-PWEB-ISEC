@@ -9,77 +9,19 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = BlazorWEB
 build_property.RootNamespace = BlazorWEB
-build_property.ProjectDir = C:\Users\diogo\OneDrive\Ambiente de Trabalho\Diogo\ISEC\3º Ano\1º Semestre\PWEB\Trabalho Prático\Projeto\MyColl\Blazor\
+build_property.ProjectDir = C:\PWEB\Projeto\MyColl\Blazor\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\diogo\OneDrive\Ambiente de Trabalho\Diogo\ISEC\3º Ano\1º Semestre\PWEB\Trabalho Prático\Projeto\MyColl\Blazor
+build_property.MSBuildProjectDirectory = C:\PWEB\Projeto\MyColl\Blazor
 build_property._RazorSourceGeneratorDebug = 
-build_property.EffectiveAnalysisLevelStyle = 8.0
-build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/App.razor]
+[C:/PWEB/Projeto/MyColl/Blazor/Components/App.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Clientes/Carrinho.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDbGllbnRlc1xDYXJyaW5oby5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Clientes/Checkout.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDbGllbnRlc1xDaGVja291dC5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Clientes/ClienteHome.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDbGllbnRlc1xDbGllbnRlSG9tZS5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Clientes/HistoricoEncomendas.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDbGllbnRlc1xIaXN0b3JpY29FbmNvbWVuZGFzLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Clientes/VerProduto.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDbGllbnRlc1xWZXJQcm9kdXRvLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Fornecedores/AdicionarProduto.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xGb3JuZWNlZG9yZXNcQWRpY2lvbmFyUHJvZHV0by5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Fornecedores/ConsultarVendas.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xGb3JuZWNlZG9yZXNcQ29uc3VsdGFyVmVuZGFzLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Fornecedores/EditarProduto.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xGb3JuZWNlZG9yZXNcRWRpdGFyUHJvZHV0by5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Fornecedores/FornecedorHome.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xGb3JuZWNlZG9yZXNcRm9ybmVjZWRvckhvbWUucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Login.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xMb2dpbi5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Pages/Register.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSZWdpc3Rlci5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Routes.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/_Imports.razor]
+[C:/PWEB/Projeto/MyColl/Blazor/Components/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xfSW1wb3J0cy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Layout/MainLayout.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = b-uzygxwq9mj
-
-[C:/Users/diogo/OneDrive/Ambiente de Trabalho/Diogo/ISEC/3º Ano/1º Semestre/PWEB/Trabalho Prático/Projeto/MyColl/Blazor/Components/Layout/NavMenu.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = b-f225q5gqts

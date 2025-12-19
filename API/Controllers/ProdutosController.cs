@@ -26,28 +26,48 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<List<Produto>> ListarProdutosPorCategoriaAsync(   [FromQuery] string categoria,
-                                                                            [FromQuery] string? subcategoria = null,
-                                                                            [FromQuery] decimal? precoMin = null,
-                                                                            [FromQuery] decimal? precoMax = null,
-                                                                            [FromQuery] DisponibilidadeProduto? disponibilidade = null)
+        public async Task<ActionResult<List<Produto>>> ListarProdutosPorCategoriaAsync(
+                [FromQuery] int? categoriaId,        // MUDANÇA 1: Recebe o ID (int) em vez da Classe
+                [FromQuery] int? subcategoriaId = null, // MUDANÇA 2: Subcategoria também é um ID
+                [FromQuery] decimal? precoMin = null,
+                [FromQuery] decimal? precoMax = null,
+                [FromQuery] DisponibilidadeProduto? disponibilidade = null)
         {
-            var query = _context.Produtos.AsQueryable();
+            // Começa a consulta e carrega os dados relacionados
+            var query = _context.Produtos
+                .Include(p => p.Categoria) // Importante para ver o nome da categoria no JSON
+                .AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(categoria))
-                query = query.Where(p => p.Categoria == categoria);
+            // Lógica de Filtro por Categoria (Corrigida)
 
-            if (!string.IsNullOrWhiteSpace(subcategoria))
-                query = query.Where(p => p.SubCategoria == subcategoria);
+            // 1. Se o utilizador escolheu uma subcategoria específica, filtramos por ela
+            if (subcategoriaId.HasValue)
+            {
+                query = query.Where(p => p.CategoriaId == subcategoriaId.Value);
+            }
+            // 2. Se escolheu apenas a categoria principal, queremos produtos dela OU das filhas
+            else if (categoriaId.HasValue)
+            {
+                query = query.Where(p => p.CategoriaId == categoriaId.Value
+                                      || p.Categoria.CategoriaPaiId == categoriaId.Value);
+            }
 
+            // Filtros de Preço (Mantidos iguais aos teus)
             if (precoMin.HasValue)
+            {
                 query = query.Where(p => p.Preco >= precoMin.Value);
+            }
 
             if (precoMax.HasValue)
+            {
                 query = query.Where(p => p.Preco <= precoMax.Value);
+            }
 
+            // Filtro de Disponibilidade (Mantido igual ao teu)
             if (disponibilidade.HasValue)
+            {
                 query = query.Where(p => p.Disponibilidade == disponibilidade.Value);
+            }
 
             return await query.ToListAsync();
         }
@@ -62,7 +82,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Produto>> ObterProdutoPorId(int id)
+        public async Task<ActionResult<Produto>> ObterProdutoPorId(string id)
         {
             var produto = await _context.Produtos
                 .FirstOrDefaultAsync(p => p.Id == id);

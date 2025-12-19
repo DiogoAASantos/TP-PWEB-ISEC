@@ -1,2 +1,0 @@
-C:\Users\diogo\OneDrive\Ambiente de Trabalho\Diogo\ISEC\3º Ano\1º Semestre\PWEB\Trabalho Prático\Projeto\MyColl\RCL\obj\Debug\net8.0\staticwebassets.build.json
-C:\Users\diogo\OneDrive\Ambiente de Trabalho\Diogo\ISEC\3º Ano\1º Semestre\PWEB\Trabalho Prático\Projeto\MyColl\RCL\obj\Debug\net8.0\staticwebassets.build.json

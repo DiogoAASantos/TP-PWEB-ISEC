@@ -1,4 +1,8 @@
 ﻿using API.Data;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,16 +19,19 @@ namespace API.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IConfiguration _configuration;
 
         private readonly ApplicationDbContext _context;
 
         public AuthController(UserManager<ApplicationUser> userManager,
                               SignInManager<ApplicationUser> signInManager,
-                              ApplicationDbContext context)
+                              ApplicationDbContext context,
+                              IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _context = context;
+            _configuration = configuration;
         }
 
         [HttpPost("register")]
@@ -32,8 +39,9 @@ namespace API.Controllers
         {
             var user = new ApplicationUser
             {
-                UserName = dto.Email,
+                UserName = dto.Email, 
                 Email = dto.Email,
+                Nome = dto.Nome,      
                 Tipo = dto.TipoUtilizador
             };
 
@@ -48,6 +56,7 @@ namespace API.Controllers
                 case TipoUtilizador.Cliente:
                     _context.Clientes.Add(new Cliente
                     {
+                        Id = user.Id, 
                         Nome = dto.Nome,
                         Email = dto.Email,
                         Estado = EstadoUtilizador.Pendente,
@@ -57,6 +66,7 @@ namespace API.Controllers
                 case TipoUtilizador.Fornecedor:
                     _context.Fornecedores.Add(new Fornecedor
                     {
+                        Id = user.Id, 
                         Nome = dto.Nome,
                         Email = dto.Email,
                         Estado = EstadoUtilizador.Pendente
@@ -70,37 +80,85 @@ namespace API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        public async Task<IActionResult> Login([FromBody] LoginDTO dto)
         {
+            // 1. A TUA LÓGICA ORIGINAL (Validação de Password)
+            // Nota: O último 'false' impede o bloqueio da conta em falhas para facilitar testes
             var result = await _signInManager.PasswordSignInAsync(dto.Email, dto.Password, false, false);
-            if (!result.Succeeded) return Unauthorized("Credenciais inválidas");
 
-            // Verifica se é cliente ou fornecedor
+            if (!result.Succeeded)
+                return Unauthorized("Credenciais inválidas");
+
+            UserDTO? userResponse = null;
+            string role = "";
+
+            // 2. A TUA LÓGICA ORIGINAL (Identificar se é Cliente ou Fornecedor)
+            // Usamos OfType para garantir que vamos buscar os dados específicos
+
             var cliente = await _userManager.Users.OfType<Cliente>().FirstOrDefaultAsync(c => c.Email == dto.Email);
             if (cliente != null)
             {
-                return Ok(new UserDTO
+                role = "Cliente";
+                Console.WriteLine($"DEBUG: Cliente encontrado. Nome na BD: '{cliente.Nome}'");
+                userResponse = new UserDTO
                 {
                     Id = cliente.Id,
-                    Email = cliente.Email,
-                    Nome = cliente.Nome,
-                    Tipo = "Cliente"
-                });
+                    Email = cliente.Email!,
+                    Nome = cliente.Nome!, // Propriedade específica de Cliente
+                    Tipo = role
+                };
             }
-
-            var fornecedor = await _userManager.Users.OfType<Fornecedor>().FirstOrDefaultAsync(f => f.Email == dto.Email);
-            if (fornecedor != null)
+            else
             {
-                return Ok(new UserDTO
+                // Se não for cliente, verifica se é fornecedor
+                var fornecedor = await _userManager.Users.OfType<Fornecedor>().FirstOrDefaultAsync(f => f.Email == dto.Email);
+                if (fornecedor != null)
                 {
-                    Id = fornecedor.Id,
-                    Email = fornecedor.Email,
-                    Nome = fornecedor.Nome,
-                    Tipo = "Fornecedor"
-                });
+                    role = "Fornecedor";
+                    userResponse = new UserDTO
+                    {
+                        Id = fornecedor.Id,
+                        Email = fornecedor.Email!,
+                        Nome = fornecedor.Nome!, // Propriedade específica de Fornecedor
+                        Tipo = role
+                    };
+                }
             }
 
-            return Unauthorized("Utilizador não encontrado");
+            if (userResponse == null)
+                return Unauthorized("Utilizador existe mas não tem perfil de Cliente nem Fornecedor.");
+
+            // 3. A NOVIDADE: GERAR O TOKEN JWT
+            // Sem isto, o login é inútil para o MAUI/Blazor
+            userResponse.Token = GerarTokenJwt(userResponse.Id, userResponse.Email, role);
+
+            return Ok(userResponse);
+        }
+
+        private string GerarTokenJwt(string userId, string email, string role)
+        {
+            var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]);
+
+            var claims = new List<Claim>
+            {
+                // Usa ClaimTypes para garantir compatibilidade total
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(ClaimTypes.Email, email),
+                new Claim(ClaimTypes.Role, role)
+            };
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddDays(7), // Token dura 7 dias
+                Issuer = _configuration["Jwt:Issuer"],
+                Audience = _configuration["Jwt:Audience"],
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
 
         public record RegisterDto(string Nome, string Email, string Password, TipoUtilizador Tipo);

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RCL.Data.Model
 {
@@ -10,14 +6,18 @@ namespace RCL.Data.Model
     {
         public int Id { get; set; }
 
-        public string UserId { get; set; } = null!;
+        // Ligação ao Cliente (User Identity)
+        public string ClienteId { get; set; } = string.Empty;
 
-        public int ProdutoId { get; set; }
+        [ForeignKey("ClienteId")]
+        public Cliente? Cliente { get; set; }
+
+        // Ligação ao Produto
+
+        [ForeignKey("ProdutoId")]
+        public Produto? Produto { get; set; }
+        public string ProdutoId { get; set; } = string.Empty;
 
         public int Quantidade { get; set; }
-
-        // Navegação
-        public Produto Produto { get; set; } = null!;
     }
-
 }

@@ -1,0 +1,59 @@
+﻿@page "/register"
+
+@using RCL.Data.DTO
+@using RCL.Data.DTO.Auth
+@using RCL.Data.Services
+@using RCL.Data.Model
+@using RCL.Data.Model.Enums
+@using RCL.Shared.Layout
+@layout EmptyLayout
+
+@inject IAuthService Auth
+@inject NavigationManager Nav
+
+<h3>Registo</h3>
+
+@if (error != null)
+{
+    <p style="color:red">@error</p>
+}
+
+<EditForm Model="@model" OnValidSubmit="HandleRegister">
+    <InputText @bind-Value="model.Email" placeholder="Email" />
+    <InputText @bind-Value="model.Password" placeholder="Password" type="password" />
+    <InputText @bind-Value="model.Morada" placeholder="Morada" />
+    <InputText @bind-Value="model.Telefone" placeholder="Telefone" />
+
+    <select @bind="model.TipoUtilizador">
+        <option value="@TipoUtilizador.Cliente">Cliente</option>
+        <option value="@TipoUtilizador.Fornecedor">Fornecedor</option>
+    </select>
+
+    @if (model.TipoUtilizador == TipoUtilizador.Fornecedor)
+    {
+        <InputText @bind-Value="model.Empresa" placeholder="Empresa" />
+    }
+
+    <button type="submit">Registar</button>
+</EditForm>
+
+@code {
+    private RegisterDTO model = new();  
+    private string? error;              
+
+    private async Task HandleRegister()
+    {
+        error = null;
+
+        var ok = await Auth.RegisterAsync(model);
+
+        if (ok)
+        {
+            Nav.NavigateTo("/login");
+        }
+        else
+        {
+            error = "Falha no registo.";
+        }
+    }
+}

@@ -1,4 +1,4 @@
-﻿namespace UtilidadesMAUI
+﻿namespace MyColl.MAUI
 {
     public partial class MainPage : ContentPage
     {

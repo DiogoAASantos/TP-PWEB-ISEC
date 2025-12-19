@@ -3,7 +3,7 @@
     public class AddCarrinhoDTO
     {
         public string UserId { get; set; } = null!;
-        public int ProdutoId { get; set; }
+        public string ProdutoId { get; set; }
         public int Quantidade { get; set; }
     }
 }
