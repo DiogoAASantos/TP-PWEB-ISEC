@@ -37,44 +37,42 @@ namespace API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO dto)
         {
-            var user = new ApplicationUser
-            {
-                UserName = dto.Email, 
-                Email = dto.Email,
-                Nome = dto.Nome,      
-                Tipo = dto.TipoUtilizador
-            };
+            // 1. Instanciar o tipo correto logo no início
+            ApplicationUser user;
 
+            if (dto.TipoUtilizador == TipoUtilizador.Cliente)
+            {
+                user = new Cliente
+                {
+                    UserName = dto.Email,
+                    Email = dto.Email,
+                    Nome = dto.Nome,
+                    Tipo = dto.TipoUtilizador,
+                    Estado = EstadoUtilizador.Pendente
+                };
+            }
+            else
+            {
+                user = new Fornecedor
+                {
+                    UserName = dto.Email,
+                    Email = dto.Email,
+                    Nome = dto.Nome,
+                    Tipo = dto.TipoUtilizador,
+                    Estado = EstadoUtilizador.Pendente
+                };
+            }
+
+            // 2. O CreateAsync já guarda tudo na base de dados (Users e a tabela de Cliente/Fornecedor)
             var result = await _userManager.CreateAsync(user, dto.Password);
+
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
             await _userManager.AddToRoleAsync(user, dto.TipoUtilizador.ToString());
 
-            switch (dto.TipoUtilizador)
-            {
-                case TipoUtilizador.Cliente:
-                    _context.Clientes.Add(new Cliente
-                    {
-                        Id = user.Id, 
-                        Nome = dto.Nome,
-                        Email = dto.Email,
-                        Estado = EstadoUtilizador.Pendente,
-                    });
-                    break;
-
-                case TipoUtilizador.Fornecedor:
-                    _context.Fornecedores.Add(new Fornecedor
-                    {
-                        Id = user.Id, 
-                        Nome = dto.Nome,
-                        Email = dto.Email,
-                        Estado = EstadoUtilizador.Pendente
-                    });
-                    break;
-            }
-
-            await _context.SaveChangesAsync();
+            // NÃO precisas de _context.Clientes.Add nem de _context.SaveChangesAsync() 
+            // porque o CreateAsync já fez o trabalho se a herança estiver bem configurada.
 
             return Ok("Utilizador criado com sucesso");
         }

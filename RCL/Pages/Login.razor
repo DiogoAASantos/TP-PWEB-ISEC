@@ -47,12 +47,14 @@
         if (user.Tipo == "Cliente")
         {
             ClienteService.SetCliente(user);
+            Nav.NavigateTo("/Home");
         }
         else if (user.Tipo == "Fornecedor")
         {
             FornecedorService.SetFornecedor(user);
+            Nav.NavigateTo("/fornecedor/home");
         }
 
-        Nav.NavigateTo("/Home");
+        
     }
 }
