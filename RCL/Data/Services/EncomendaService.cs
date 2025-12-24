@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
 using RCL.Data.DTO;
 using RCL.Data.DTO.EncomendasDTOs;
 using RCL.Data.Interfaces;
@@ -6,6 +7,7 @@ using RCL.Data.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,58 +17,81 @@ namespace RCL.Data.Services
     public class EncomendaService : IEncomendaService
     {
         private readonly HttpClient _http;
-        private readonly ICarrinhoService _carrinhoService; 
+        private readonly ICarrinhoService _carrinhoService;
+        private readonly IMyStorageService _localStorage;
 
-        public EncomendaService(HttpClient http, ICarrinhoService carrinhoService)
+        public EncomendaService(HttpClient http, ICarrinhoService carrinhoService, IMyStorageService localStorage)
         {
             _http = http;
             _carrinhoService = carrinhoService;
+            _localStorage = localStorage;
+        }
+
+        private async Task<HttpRequestMessage> CreateAuthenticatedRequestAsync(HttpMethod method, string uri, object? content = null)
+        {
+            var token = await _localStorage.GetItemAsync<string>("authToken");
+            var request = new HttpRequestMessage(method, uri);
+
+            if (content != null)
+                request.Content = JsonContent.Create(content);
+
+            if (!string.IsNullOrEmpty(token))
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Trim('"'));
+
+            return request;
         }
 
         public async Task<Encomenda> EfetivarCompraAsync()
         {
-            if (!_carrinhoService.Carrinho.Any()) // Assumindo que Carrinho está acessível/método no ICarrinhoService
+            var itensCarrinho = await _carrinhoService.ObterItensAsync();
+
+            if (itensCarrinho == null || !itensCarrinho.Any())
                 throw new InvalidOperationException("Carrinho vazio. Adicione produtos antes de finalizar a compra.");
 
-            // 2. CRIA O DTO SEGURO (Sem enviar o ClienteId, pois a API o obtém do Token)
             var encomendaDto = new CriarEncomendaDTO
             {
-                Itens = _carrinhoService.Carrinho.Select(item => new EncomendaItemDTO
+                Itens = itensCarrinho.Select(item => new EncomendaItemDTO
                 {
+                    ProdutoId = item.ProdutoId,
                     NomeProduto = item.Produto.Nome,
                     PrecoUnitario = item.Produto.Preco,
-                    ProdutoId = item.Produto.Id,
                     Quantidade = item.Quantidade
                 }).ToList()
             };
 
-            // 3. CHAMA A API SEGURA
-            var response = await _http.PostAsJsonAsync("/api/encomendas/efetivar", encomendaDto); 
+            var request = await CreateAuthenticatedRequestAsync(HttpMethod.Post, "/api/encomendas/efetivar", encomendaDto);
+            var response = await _http.SendAsync(request);
 
             response.EnsureSuccessStatusCode();
 
-            // 4. LIMPEZA LOCAL (SÓ APÓS O SUCESSO DA API)
-            _carrinhoService.LimparCarrinhoLocal(); // Assumindo que este método existe no CarrinhoService
+            _carrinhoService.LimparCarrinhoLocal();
 
-            // 5. Devolve o resultado
             return await response.Content.ReadFromJsonAsync<Encomenda>()
-                        ?? throw new Exception("Falha ao efetivar compra e obter encomenda.");
+                   ?? throw new Exception("Falha ao ler resposta da encomenda.");
         }
 
         public async Task<List<EncomendaDTO>> ConsultarHistoricoAsync()
         {
-            var response = await _http.GetAsync($"api/encomendas/historico");
-            response.EnsureSuccessStatusCode();
+            var request = await CreateAuthenticatedRequestAsync(HttpMethod.Get, "api/encomendas/historico");
+            var response = await _http.SendAsync(request);
 
-            var historico = await response.Content.ReadFromJsonAsync<List<EncomendaDTO>>();
-
-            return historico ?? new List<EncomendaDTO>();
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<List<EncomendaDTO>>() ?? new();
+            }
+            return new();
         }
 
         public async Task<List<VendaFornecedorDTO>> ObterVendasDoFornecedorAsync()
         {
-            return await _http.GetFromJsonAsync<List<VendaFornecedorDTO>>($"api/encomendas/fornecedor/vendas")
-                   ?? new List<VendaFornecedorDTO>();
+            var request = await CreateAuthenticatedRequestAsync(HttpMethod.Get, "api/encomendas/fornecedor/vendas");
+            var response = await _http.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<List<VendaFornecedorDTO>>() ?? new();
+            }
+            return new();
         }
     }
 }

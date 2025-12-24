@@ -32,35 +32,42 @@ main {
 .nav-scrollable {
     height: calc(100vh - 3.5rem);
     overflow-y: auto;
+    background-color: #f0f8ff !important; /* Azul muito claro (AliceBlue) */
+    border-right: 1px solid #d1e6f3;
 }
 
+    /* Estilo geral dos Links (Texto) */
     .nav-scrollable .nav-link {
-        color: #bdbdbd; /* Cinza claro no texto */
+        color: #005a9e !important; /* Azul escuro para contraste no fundo claro */
         font-weight: 500;
+        transition: all 0.2s ease;
     }
 
+    /* Espaçamento dos itens */
     .nav-scrollable .nav-item {
         padding-top: .1rem;
         padding-bottom: .1rem;
     }
 
-    /* Estilo para Links Ativos */
+    /* Estilo para Links Ativos (Página onde estás) */
     .nav-scrollable .nav-link.active {
-        background-color: rgba(255,255,255,0.1); /* Fundo claro quando ativo */
-        color: white;
-        border-left: 5px solid #007bff; /* Linha azul */
+        background-color: #0078d4 !important; /* Azul sólido forte */
+        color: white !important; /* Texto branco para leitura */
+        border-left: 5px solid #005a9e; /* Linha de destaque mais escura */
         padding-left: 19px !important;
     }
 
+    /* Efeito ao passar o rato (Hover) */
     .nav-scrollable .nav-link:hover {
-        background-color: rgba(255,255,255,0.05);
-        color: white;
+        background-color: #cfe2f3 !important; /* Azul celeste suave */
+        color: #004578 !important;
     }
 
-    .navbar-toggler-icon {
-        /* O valor RGB(0, 0, 0) é preto, codificado na URL do SVG */
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23000' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
-    }
+/* Ícone do Menu Mobile (Hambúrguer) */
+/* Mudei o stroke para %230078d4 (Azul) para combinar com o tema */
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%230078d4' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
 
 /* Estilo para Títulos de Secção (Geral, Cliente, Fornecedor) */
 .sidebar-heading {

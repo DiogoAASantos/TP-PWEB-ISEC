@@ -10,10 +10,10 @@ namespace RCL.Data.Services
     {
         private readonly HttpClient _http;
         private readonly AuthenticationStateProvider _authProvider;
-        private readonly ILocalStorageService _localStorage;
+        private readonly IMyStorageService _localStorage;
 
         // Injetamos também o AuthenticationStateProvider
-        public AuthService(HttpClient http, AuthenticationStateProvider authProvider, ILocalStorageService localStorage)
+        public AuthService(HttpClient http, AuthenticationStateProvider authProvider, IMyStorageService localStorage)
         {
             _http = http;
             _authProvider = authProvider;
@@ -31,10 +31,10 @@ namespace RCL.Data.Services
 
             if (user != null && !string.IsNullOrEmpty(user.Token))
             {
-                // 1. Guardar no disco (LocalStorage)
-                await _localStorage.SetItemAsStringAsync("authToken", user.Token);
+                var cleanToken = user.Token.Trim().Trim('"');
 
-                // 2. Dizer ao Blazor que o estado de autenticação mudou
+                await _localStorage.SetItemAsync("authToken", cleanToken);
+
                 if (_authProvider is CustomAuthProvider customAuth)
                 {
                     customAuth.NotifyUserLoggedIn();
@@ -52,10 +52,13 @@ namespace RCL.Data.Services
 
         public async Task LogoutAsync()
         {
-            // 1. LIMPAR TUDO
+            // 1. Limpar LocalStorage
             await _localStorage.RemoveItemAsync("authToken");
+
+            // 2. Limpar o cabeçalho do HttpClient (caso tenha sido injetado algum)
             _http.DefaultRequestHeaders.Authorization = null;
 
+            // 3. Notificar o sistema
             if (_authProvider is CustomAuthProvider customAuth)
             {
                 customAuth.NotifyUserLoggedOut();

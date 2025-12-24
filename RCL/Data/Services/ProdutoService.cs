@@ -1,10 +1,12 @@
-﻿using RCL.Data.Interfaces;
+﻿using Blazored.LocalStorage;
+using RCL.Data.Interfaces;
 using RCL.Data.Model;
 using RCL.Data.Model.Enums;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,10 +17,12 @@ namespace RCL.Data.Services
     public class ProdutoService : IProdutoService
     {
         private readonly HttpClient _http;
+        private readonly IMyStorageService _localStorage;
 
-        public ProdutoService(HttpClient http) 
+        public ProdutoService(HttpClient http, IMyStorageService localStorage) 
         {
             _http = http;
+            _localStorage = localStorage;
         }
 
         public async Task<List<Produto>> ListarProdutosAsync()
@@ -74,10 +78,23 @@ namespace RCL.Data.Services
         // Inserir novo produto
         public async Task<Produto> InserirProdutoAsync(string fornecedorId, Produto produto)
         {
+            produto.Id = 0;
             produto.FornecedorId = fornecedorId;
-            produto.Estado = EstadoProduto.PendenteAprovacao;
+            produto.Estado = EstadoProduto.AVenda;
 
-            var response = await _http.PostAsJsonAsync("/api/fornecedores/produtos", produto);
+            var token = await _localStorage.GetItemAsync<string>("authToken");
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "api/fornecedores/produtos");
+
+            request.Content = JsonContent.Create(produto);
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Trim('"'));
+            }
+
+            var response = await _http.SendAsync(request);
+
             response.EnsureSuccessStatusCode();
 
             return await response.Content.ReadFromJsonAsync<Produto>() ?? produto;
@@ -86,8 +103,34 @@ namespace RCL.Data.Services
         // Consultar produtos do fornecedor
         public async Task<List<Produto>> ConsultarProdutosAsync(string fornecedorId)
         {
-            return await _http.GetFromJsonAsync<List<Produto>>($"/api/fornecedores/{fornecedorId}/produtos")
-                   ?? new List<Produto>();
+            // 1. Buscamos o token diretamente aqui (onde o JSInterop funciona)
+            var token = await _localStorage.GetItemAsync<string>("authToken");
+
+            // 2. Criamos a mensagem de pedido manualmente
+            var request = new HttpRequestMessage(HttpMethod.Get, $"api/fornecedores/{fornecedorId}/produtos");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                // 3. Injetamos o token "na mão" limpando as aspas
+                var tokenLimpo = token.Trim().Trim('"');
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenLimpo);
+                Console.WriteLine($">>>> SERVICE: Token injetado manualmente: {tokenLimpo.Substring(0, 10)}...");
+            }
+            else
+            {
+                Console.WriteLine(">>>> SERVICE: Erro - Token não encontrado no LocalStorage!");
+            }
+
+            var response = await _http.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<List<Produto>>() ?? new List<Produto>();
+            }
+
+            var erro = await response.Content.ReadAsStringAsync();
+
+            return new List<Produto>();
         }
 
         // Editar produto
@@ -100,13 +143,13 @@ namespace RCL.Data.Services
         }
 
         // Alterar estado do produto
-        public async Task<bool> AlterarEstadoProdutoAsync(string fornecedorId, string produtoId, EstadoProduto novoEstado)
+        public async Task<bool> AlterarEstadoProdutoAsync(string fornecedorId, int produtoId, EstadoProduto novoEstado)
         {
             var response = await _http.PatchAsync($"/api/fornecedores/{fornecedorId}/produtos/{produtoId}/estado?novoEstado={novoEstado}", null);
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<Produto?> ObterProdutoPorIdAsync(string produtoId)
+        public async Task<Produto?> ObterProdutoPorIdAsync(int produtoId)
         {
             return await _http.GetFromJsonAsync<Produto>($"/api/produtos/{produtoId}");
         }

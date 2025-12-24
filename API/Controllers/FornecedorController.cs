@@ -9,6 +9,7 @@ using System;
 
 namespace API.Controllers
 {
+    [Authorize(Roles = "Fornecedor")]
     [ApiController]
     [Route("api/[controller]")]
     public class FornecedoresController : ControllerBase
@@ -24,7 +25,9 @@ namespace API.Controllers
         [HttpPost("produtos")]
         public async Task<ActionResult<Produto>> InserirProduto([FromBody] Produto produto)
         {
-            produto.Estado = EstadoProduto.PendenteAprovacao;
+            produto.Estado = EstadoProduto.AVenda;
+            produto.Id = 0;
+
             _context.Produtos.Add(produto);
             await _context.SaveChangesAsync();
 
@@ -32,18 +35,18 @@ namespace API.Controllers
         }
 
         [HttpGet("{fornecedorId}/produtos")]
-        [Authorize(Roles = "Fornecedor")]
         public async Task<ActionResult<List<Produto>>> ConsultarProdutos(string fornecedorId)
         {
             var produtos = await _context.Produtos
                 .Where(p => p.FornecedorId == fornecedorId)
                 .ToListAsync();
+
             return Ok(produtos);
         }
 
         // GET: api/fornecedores/{fornecedorId}/produtos/{produtoId}
         [HttpGet("{fornecedorId}/produtos/{produtoId}")]
-        public async Task<ActionResult<Produto>> ConsultarProduto(string fornecedorId, string produtoId)
+        public async Task<ActionResult<Produto>> ConsultarProduto(string fornecedorId, int produtoId)
         {
             var produto = await _context.Produtos
                 .FirstOrDefaultAsync(p => p.FornecedorId == fornecedorId && p.Id == produtoId);
@@ -54,7 +57,7 @@ namespace API.Controllers
 
         // PUT: api/fornecedores/{fornecedorId}/produtos/{produtoId}
         [HttpPut("{fornecedorId}/produtos/{produtoId}")]
-        public async Task<ActionResult<Produto?>> EditarProduto(string fornecedorId, string produtoId, [FromBody] Produto produtoAtualizado)
+        public async Task<ActionResult<Produto?>> EditarProduto(string fornecedorId, int produtoId, [FromBody] Produto produtoAtualizado)
         {
             var produto = await _context.Produtos
                 .FirstOrDefaultAsync(p => p.FornecedorId == fornecedorId && p.Id == produtoId);
@@ -79,7 +82,7 @@ namespace API.Controllers
 
         // PATCH: api/fornecedores/{fornecedorId}/produtos/{produtoId}/estado
         [HttpPatch("{fornecedorId}/produtos/{produtoId}/estado")]
-        public async Task<ActionResult> AlterarEstadoProduto(string fornecedorId, string produtoId, [FromQuery] EstadoProduto novoEstado)
+        public async Task<ActionResult> AlterarEstadoProduto(string fornecedorId, int produtoId, [FromQuery] EstadoProduto novoEstado)
         {
             var produto = await _context.Produtos
                 .FirstOrDefaultAsync(p => p.FornecedorId == fornecedorId && p.Id == produtoId);
@@ -99,7 +102,7 @@ namespace API.Controllers
             var vendas = await _context.EncomendaItems
                 .Include(ei => ei.Produto)
                 .Include(ei => ei.Encomenda)
-                .Where(ei => ei.Produto.FornecedorId == fornecedorId) // Filtra só os produtos deste fornecedor
+                .Where(ei => ei.Produto.FornecedorId == fornecedorId) 
                 .OrderByDescending(ei => ei.Encomenda.Data_Encomenda)
                 .Select(ei => new VendaFornecedorDTO
                 {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
 using RCL.Data.DTO;
 using RCL.Data.DTO.CarrinhoDTOs;
 using RCL.Data.Interfaces;
@@ -6,6 +7,7 @@ using RCL.Data.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text;
@@ -17,14 +19,16 @@ namespace RCL.Data.Services
     {
         private readonly HttpClient _http;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
+        private readonly IMyStorageService _localStorage;
 
         private List<CarrinhoItem> _carrinhoLocal = new();
         public IReadOnlyList<CarrinhoItem> Carrinho => _carrinhoLocal.AsReadOnly();
 
-        public CarrinhoService(HttpClient http, AuthenticationStateProvider authenticationStateProvider)
+        public CarrinhoService(HttpClient http, AuthenticationStateProvider authenticationStateProvider, IMyStorageService localStorage)
         {
             _http = http;
             _authenticationStateProvider = authenticationStateProvider;
+            _localStorage = localStorage;
         }
 
         private async Task<string> GetUserIdAsync()
@@ -39,78 +43,79 @@ namespace RCL.Data.Services
             return userId;
         }
 
+        private async Task<HttpRequestMessage> CreateRequestAsync(HttpMethod method, string uri, object? content = null)
+        {
+            var token = await _localStorage.GetItemAsync<string>("authToken");
+            var request = new HttpRequestMessage(method, uri);
+
+            if (content != null)
+                request.Content = JsonContent.Create(content);
+
+            if (!string.IsNullOrEmpty(token))
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Trim('"'));
+
+            return request;
+        }
+
         public async Task<List<CarrinhoItem>> ObterItensAsync()
         {
-            string userId = await GetUserIdAsync(); 
-            var carrinhoDto = await _http.GetFromJsonAsync<CarrinhoDTO>($"api/carrinho/");
+            string userId = await GetUserIdAsync();
+            var request = await CreateRequestAsync(HttpMethod.Get, "api/carrinho/");
+            var response = await _http.SendAsync(request);
 
             _carrinhoLocal.Clear();
 
-            if (carrinhoDto?.Itens != null)
+            if (response.IsSuccessStatusCode)
             {
-                foreach (var dto in carrinhoDto.Itens)
+                var carrinhoDto = await response.Content.ReadFromJsonAsync<CarrinhoDTO>();
+                if (carrinhoDto?.Itens != null)
                 {
-                    var novoItem = new CarrinhoItem
+                    foreach (var dto in carrinhoDto.Itens)
                     {
-                        ClienteId = userId,
-                        ProdutoId = dto.ProdutoId,
-                        Quantidade = dto.Quantidade,
-                        Produto = new Produto { Id = dto.ProdutoId, Nome = dto.Nome, Preco = dto.Preco }
-                    };
-
-                    _carrinhoLocal.Add(novoItem); 
+                        _carrinhoLocal.Add(new CarrinhoItem
+                        {
+                            ClienteId = userId,
+                            ProdutoId = dto.ProdutoId,
+                            Quantidade = dto.Quantidade,
+                            Produto = new Produto { Id = dto.ProdutoId, Nome = dto.Nome, Preco = dto.Preco }
+                        });
+                    }
                 }
             }
-
-            return _carrinhoLocal; 
+            return _carrinhoLocal;
         }
 
-        public void LimparCarrinhoLocal()
-        {
-            _carrinhoLocal.Clear();
-        }
-
-        public async Task AdicionarProdutoAsync(string produtoId, int quantidade = 1)
+        public async Task AdicionarProdutoAsync(int produtoId, int quantidade = 1)
         {
             string userId = await GetUserIdAsync();
-            var dto = new AddCarrinhoDTO
-            {
-                UserId = userId,
-                ProdutoId = produtoId,
-                Quantidade = quantidade
-            };
+            var dto = new AddCarrinhoDTO { UserId = userId, ProdutoId = produtoId, Quantidade = quantidade };
 
-            await _http.PostAsJsonAsync("api/carrinho/adicionar", dto);
+            var request = await CreateRequestAsync(HttpMethod.Post, "api/carrinho/adicionar", dto);
+            await _http.SendAsync(request);
         }
 
-        public async Task AtualizarQuantidadeAsync(string produtoId, int quantidade)
+        public async Task AtualizarQuantidadeAsync(int produtoId, int quantidade)
         {
             string userId = await GetUserIdAsync();
-            var dto = new UpdateCarrinhoDTO
-            {
-                UserId = userId,
-                ProdutoId = produtoId,
-                Quantidade = quantidade
-            };
+            var dto = new UpdateCarrinhoDTO { UserId = userId, ProdutoId = produtoId, Quantidade = quantidade };
 
-            await _http.PutAsJsonAsync("api/carrinho/atualizar", dto);
+            var request = await CreateRequestAsync(HttpMethod.Put, "api/carrinho/atualizar", dto);
+            await _http.SendAsync(request);
         }
 
-        public async Task RemoverProdutoAsync(string produtoId)
+        public async Task RemoverProdutoAsync(int produtoId)
         {
-            string userId = await GetUserIdAsync();
-            await _http.DeleteAsync($"api/carrinho/{produtoId}");
+            var request = await CreateRequestAsync(HttpMethod.Delete, $"api/carrinho/{produtoId}");
+            await _http.SendAsync(request);
         }
 
         public async Task<decimal> TotalAsync()
         {
             var itens = await ObterItensAsync();
-            decimal total = 0;
-            foreach (var item in itens)
-                total += item.Produto.Preco * item.Quantidade;
-
-            return total;
+            return itens.Sum(item => item.Produto.Preco * item.Quantidade);
         }
+
+        public void LimparCarrinhoLocal() => _carrinhoLocal.Clear();
     }
 }
 

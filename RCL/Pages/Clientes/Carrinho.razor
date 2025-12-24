@@ -1,5 +1,5 @@
 ﻿@page "/carrinho"
-@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 @using Microsoft.AspNetCore.Components.Authorization
 @using RCL.Data.Model
@@ -73,28 +73,23 @@ else
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
-    }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
+        if (AuthStateTask != null)
         {
-            if (AuthStateTask != null)
-            {
-                var authState = await AuthStateTask;
-                var user = authState.User;
+            var authState = await AuthStateTask;
+            var user = authState.User;
 
-                if (user.Identity is { IsAuthenticated: true })
-                {
-                    await LoadCarrinhoData();
-                }
-                else
-                {
-                    Nav.NavigateTo("/login");
-                }
+            if (user.Identity is { IsAuthenticated: true })
+            {
+                await LoadCarrinhoData();
             }
-            StateHasChanged();
+            else
+            {
+                Nav.NavigateTo("/login");
+            }
         }
+
+        isLoading = false;
     }
 
     private async Task LoadCarrinhoData()
@@ -118,7 +113,7 @@ else
         }
     }
 
-    private async Task AtualizarQuantidade(string produtoId, int novaQuantidade)
+    private async Task AtualizarQuantidade(int produtoId, int novaQuantidade)
     {
         if (novaQuantidade > 0)
         {
@@ -127,7 +122,7 @@ else
         }
     }
 
-    private async Task RemoverItem(string produtoId)
+    private async Task RemoverItem(int produtoId)
     {
         await CarrinhoService.RemoverProdutoAsync(produtoId);
         await LoadCarrinhoData();

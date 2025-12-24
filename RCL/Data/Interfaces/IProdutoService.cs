@@ -35,7 +35,7 @@ namespace RCL.Data.Interfaces
         Task<Produto?> EditarProdutoAsync(string fornecedorId, Produto produtoAtualizado);
 
         // Alterar estado do produto (aprovado, pendente, rejeitado)
-        Task<bool> AlterarEstadoProdutoAsync(string fornecedorId, string produtoId, EstadoProduto novoEstado);
-        Task<Produto?> ObterProdutoPorIdAsync(string produtoId);
+        Task<bool> AlterarEstadoProdutoAsync(string fornecedorId, int produtoId, EstadoProduto novoEstado);
+        Task<Produto?> ObterProdutoPorIdAsync(int produtoId);
     }
 }

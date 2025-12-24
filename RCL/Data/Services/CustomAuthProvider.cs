@@ -1,6 +1,7 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
+using RCL.Data.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -9,9 +10,9 @@ namespace RCL.Data.Services
 {
     public class CustomAuthProvider : AuthenticationStateProvider
     {
-        private readonly ILocalStorageService _localStorage; 
+        private readonly IMyStorageService _localStorage; 
 
-        public CustomAuthProvider(ILocalStorageService localStorage)
+        public CustomAuthProvider(IMyStorageService localStorage)
         {
             _localStorage = localStorage;
         }
@@ -22,9 +23,9 @@ namespace RCL.Data.Services
 
             try
             {
-                token = await _localStorage.GetItemAsStringAsync("authToken");
+                token = await _localStorage.GetItemAsync<string>("authToken");
             }
-            catch (Exception) {}
+            catch (Exception) { }
 
             var identity = new ClaimsIdentity();
 
@@ -32,6 +33,8 @@ namespace RCL.Data.Services
             {
                 try
                 {
+                    token = token.Trim().Trim('"');
+
                     var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
 
                     if (jwtToken.ValidTo > DateTime.UtcNow)
@@ -55,8 +58,9 @@ namespace RCL.Data.Services
                         await _localStorage.RemoveItemAsync("authToken");
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.WriteLine($"Erro no JWT: {ex.Message}");
                     await _localStorage.RemoveItemAsync("authToken");
                 }
             }

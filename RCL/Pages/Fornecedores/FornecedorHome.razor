@@ -1,4 +1,5 @@
 ﻿@page "/fornecedor/home"
+
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.Security.Claims
@@ -6,7 +7,6 @@
 @using RCL.Data.Interfaces
 @using RCL.Data.Model.Enums;
 
-@attribute [Authorize(Roles = "Fornecedor")] 
 
 @inject IProdutoService ProdutoService
 @inject AuthenticationStateProvider AuthProvider
@@ -67,19 +67,31 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        try
         {
-            userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
-            
-            if (!string.IsNullOrEmpty(userId))
+            var authState = await AuthProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity is not null && user.Identity.IsAuthenticated)
             {
-                produtos = await ProdutoService.ConsultarProdutosAsync(userId);
+                var userIdClaim = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)
+                               ?? user.FindFirst(c => c.Type == "nameid");
+
+                if (userIdClaim != null)
+                {
+                    userId = userIdClaim.Value;
+                    produtos = await ProdutoService.ConsultarProdutosAsync(userId);
+                }
             }
         }
-        isLoading = false;
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao carregar produtos: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
     private void IrParaNovo() => Nav.NavigateTo("/fornecedor/produtos/novo");

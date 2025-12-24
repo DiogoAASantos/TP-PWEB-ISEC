@@ -12,9 +12,9 @@ namespace RCL.Data.Interfaces
         IReadOnlyList<CarrinhoItem> Carrinho { get; }
         Task<List<CarrinhoItem>> ObterItensAsync();
         void LimparCarrinhoLocal();
-        Task AdicionarProdutoAsync(string produtoId, int quantidade = 1);
-        Task AtualizarQuantidadeAsync(string produtoId, int quantidade);
-        Task RemoverProdutoAsync(string produtoId);
+        Task AdicionarProdutoAsync(int produtoId, int quantidade = 1);
+        Task AtualizarQuantidadeAsync(int produtoId, int quantidade);
+        Task RemoverProdutoAsync(int produtoId);
         Task<decimal> TotalAsync();
     }
 }

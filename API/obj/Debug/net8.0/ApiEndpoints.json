@@ -61,7 +61,7 @@
     "Parameters": [
       {
         "Name": "produtoId",
-        "Type": "System.String",
+        "Type": "System.Int32",
         "IsRequired": true
       }
     ],
@@ -115,7 +115,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "System.Int32",
+        "Type": "RCL.Data.DTO.EncomendasDTOs.EncomendaDTO",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -206,7 +206,7 @@
       },
       {
         "Name": "produtoId",
-        "Type": "System.String",
+        "Type": "System.Int32",
         "IsRequired": true
       }
     ],
@@ -237,7 +237,7 @@
       },
       {
         "Name": "produtoId",
-        "Type": "System.String",
+        "Type": "System.Int32",
         "IsRequired": true
       },
       {
@@ -273,7 +273,7 @@
       },
       {
         "Name": "produtoId",
-        "Type": "System.String",
+        "Type": "System.Int32",
         "IsRequired": true
       },
       {
@@ -392,7 +392,7 @@
     "Parameters": [
       {
         "Name": "id",
-        "Type": "System.String",
+        "Type": "System.Int32",
         "IsRequired": true
       }
     ],

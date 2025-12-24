@@ -25,41 +25,28 @@ namespace MyColl.MAUI
             builder.Logging.AddDebug();
 #endif
 
-            // 1. ENDEREÇO BASE (TRUQUE DO ANDROID)
-            string baseAddress = DeviceInfo.Platform == DevicePlatform.Android
-                ? "https://10.0.2.2:7000"
-                : "https://localhost:7000";
+            string baseAddress = "https://q5qv1x8d-7000.uks1.devtunnels.ms/";
 
-            // REGISTAR O LOCAL STORAGE
+            builder.Services.AddSingleton<IMyStorageService, MauiStorageService>();
             builder.Services.AddBlazoredLocalStorage();
 
-            // 2. REGISTAR O HANDLER E O HTTPCLIENT
-            builder.Services.AddScoped<AuthTokenHandler>();
 
             builder.Services.AddScoped(sp =>
             {
-                // Handler para ignorar SSL
-                HttpClientHandler sslHandler = new HttpClientHandler();
-                sslHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+                var handler = new HttpClientHandler();
+                handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
 
-                // Obtém o Token Handler do DI
-                var tokenHandler = sp.GetRequiredService<AuthTokenHandler>();
-
-                // Encaixa o SSL Handler DENTRO do Token Handler
-                tokenHandler.InnerHandler = sslHandler;
-
-                // O HttpClient usa o Token Handler como o seu handler principal
-                return new HttpClient(tokenHandler) { BaseAddress = new Uri(baseAddress) };
+                return new HttpClient(handler) { BaseAddress = new Uri(baseAddress) };
             });
 
 
-            // 2. REGISTAR OS MESMOS SERVIÇOS QUE NO WEB
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ICarrinhoService, CarrinhoService>();
             builder.Services.AddScoped<IEncomendaService, EncomendaService>();
             builder.Services.AddScoped<IClienteService, ClienteService>();
             builder.Services.AddScoped<IFornecedorService, FornecedorService>();
             builder.Services.AddScoped<IProdutoService, ProdutoService>();
+
             builder.Services.AddAuthorizationCore(); 
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthProvider>();
 

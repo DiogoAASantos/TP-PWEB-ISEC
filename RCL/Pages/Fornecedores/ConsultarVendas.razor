@@ -1,4 +1,5 @@
 ﻿@page "/fornecedor/historico"
+
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
@@ -51,12 +52,27 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthProvider.GetAuthenticationStateAsync();
-        var userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
-        if (!string.IsNullOrEmpty(userId))
+        try
         {
-            vendas = await EncomendaService.ObterVendasDoFornecedorAsync();
+            var authState = await AuthProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            var userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value
+                         ?? user.FindFirst(c => c.Type == "nameid")?.Value;
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                vendas = await EncomendaService.ObterVendasDoFornecedorAsync() ?? new();
+            }
+            else
+            {
+                vendas = new List<VendaFornecedorDTO>();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao carregar vendas: {ex.Message}");
+            vendas = new List<VendaFornecedorDTO>();
         }
     }
 }

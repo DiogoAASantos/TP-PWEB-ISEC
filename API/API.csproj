@@ -21,4 +21,8 @@
 		<ProjectReference Include="..\RCL\RCL.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Migrations\" />
+	</ItemGroup>
+
 </Project>

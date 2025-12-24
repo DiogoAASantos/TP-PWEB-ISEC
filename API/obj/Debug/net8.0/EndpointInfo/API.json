@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "API",
-    "version": "1.0"
+    "title": "MyColl API",
+    "version": "v1"
   },
   "paths": {
     "/api/Auth/register": {
@@ -169,7 +169,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "format": "int32"
             }
           }
         ],
@@ -210,20 +211,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "integer",
-                  "format": "int32"
+                  "$ref": "#/components/schemas/EncomendaDTO"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "integer",
-                  "format": "int32"
+                  "$ref": "#/components/schemas/EncomendaDTO"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "integer",
-                  "format": "int32"
+                  "$ref": "#/components/schemas/EncomendaDTO"
                 }
               }
             }
@@ -422,7 +420,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "format": "int32"
             }
           }
         ],
@@ -467,7 +466,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "format": "int32"
             }
           }
         ],
@@ -533,7 +533,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "format": "int32"
             }
           },
           {
@@ -756,7 +757,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "format": "int32"
             }
           }
         ],
@@ -795,8 +797,8 @@
             "nullable": true
           },
           "produtoId": {
-            "type": "string",
-            "nullable": true
+            "type": "integer",
+            "format": "int32"
           },
           "quantidade": {
             "type": "integer",
@@ -830,8 +832,8 @@
             "format": "double"
           },
           "produtoId": {
-            "type": "string",
-            "nullable": true
+            "type": "integer",
+            "format": "int32"
           },
           "quantidade": {
             "type": "integer",
@@ -906,8 +908,7 @@
             "format": "double"
           },
           "estado": {
-            "type": "string",
-            "nullable": true
+            "$ref": "#/components/schemas/EstadoEncomenda"
           },
           "itens": {
             "type": "array",
@@ -927,8 +928,8 @@
             "nullable": true
           },
           "produtoId": {
-            "type": "string",
-            "nullable": true
+            "type": "integer",
+            "format": "int32"
           },
           "quantidade": {
             "type": "integer",
@@ -945,6 +946,16 @@
           }
         },
         "additionalProperties": false
+      },
+      "EstadoEncomenda": {
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "type": "integer",
+        "format": "int32"
       },
       "EstadoProduto": {
         "enum": [
@@ -1071,8 +1082,8 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "string",
-            "nullable": true
+            "type": "integer",
+            "format": "int32"
           },
           "fornecedorId": {
             "type": "string",
@@ -1173,8 +1184,8 @@
             "nullable": true
           },
           "produtoId": {
-            "type": "string",
-            "nullable": true
+            "type": "integer",
+            "format": "int32"
           },
           "quantidade": {
             "type": "integer",
@@ -1209,6 +1220,19 @@
         },
         "additionalProperties": false
       }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "description": "Insira o token desta forma: Bearer {seu_token}",
+        "name": "Authorization",
+        "in": "header"
+      }
     }
-  }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ]
 }

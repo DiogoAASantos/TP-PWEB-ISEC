@@ -34,7 +34,6 @@
     {
         error = null;
 
-        // Agora LoginAsync retorna UserDTO
         var user = await Auth.LoginAsync(model);
 
         if (user == null)
@@ -43,7 +42,6 @@
             return;
         }
 
-        // Guardar o utilizador no serviço correto
         if (user.Tipo == "Cliente")
         {
             ClienteService.SetCliente(user);
@@ -54,7 +52,5 @@
             FornecedorService.SetFornecedor(user);
             Nav.NavigateTo("/fornecedor/home");
         }
-
-        
     }
 }

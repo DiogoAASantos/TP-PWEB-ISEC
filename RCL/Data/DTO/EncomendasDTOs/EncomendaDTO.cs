@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RCL.Data.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,7 @@ namespace RCL.Data.DTO.EncomendasDTOs
         public int Id { get; set; }
         public DateTime Data_Encomenda { get; set; }
         public decimal Total { get; set; }
-        public string Estado { get; set; } = string.Empty; // Envia o Enum como texto
+        public EstadoEncomenda Estado { get; set; } = EstadoEncomenda.Pendente;
 
         public List<EncomendaItemDTO> Itens { get; set; } = new();
     }

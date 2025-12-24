@@ -55,15 +55,12 @@ else
 
     private async Task FinalizarCompra()
     {
-        // Efetivar encomenda via serviço
         var encomenda = await EncomendaService.EfetivarCompraAsync();
 
         if (encomenda != null)
         {
-            // Limpar carrinho local
             CarrinhoService.LimparCarrinhoLocal();
 
-            // Redirecionar para página de histórico de compras
             Nav.NavigateTo("/historico");
         }
         else

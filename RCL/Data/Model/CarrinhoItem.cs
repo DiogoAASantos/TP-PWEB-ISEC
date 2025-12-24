@@ -16,7 +16,7 @@ namespace RCL.Data.Model
 
         [ForeignKey("ProdutoId")]
         public Produto? Produto { get; set; }
-        public string ProdutoId { get; set; } = string.Empty;
+        public int ProdutoId { get; set; }
 
         public int Quantidade { get; set; }
     }

@@ -1,5 +1,5 @@
 ﻿@page "/historico"
-@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 @using RCL.Data.DTO.EncomendasDTOs
 @using RCL.Data.Model
@@ -62,24 +62,26 @@ else
     [CascadingParameter]
     private Task<AuthenticationState>? AuthStateTask { get; set; }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender)
-        {
-            if (AuthStateTask != null)
-            {
-                var authState = await AuthStateTask;
-                var user = authState.User;
 
-                if (user.Identity is { IsAuthenticated: true })
-                {
-                    await CarregarDados();
-                }
-                else
-                {
-                    Nav.NavigateTo("/login");
-                }
+        if (AuthStateTask != null)
+        {
+            var authState = await AuthStateTask;
+            var user = authState.User;
+
+            if (user.Identity is { IsAuthenticated: true })
+            {
+                await CarregarDados();
             }
+            else
+            {
+                Nav.NavigateTo("/login");
+            }
+        }
+        else
+        {
+            Nav.NavigateTo("/login");
         }
     }
 

@@ -25,13 +25,18 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<CarrinhoDTO>> ObterCarrinho()
         {
-            var userIdDoToken = User.FindFirst("nameid")?.Value;
+            var userIdDoToken = User.FindFirst("nameid")?.Value
+                        ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             var itens = await _context.CarrinhoItens
+                .Include(c => c.Produto) 
                 .Where(c => c.ClienteId == userIdDoToken)
                 .Select(c => new CarrinhoItemDTO
                 {
                     ProdutoId = c.ProdutoId,
-                    Quantidade = c.Quantidade
+                    Quantidade = c.Quantidade,
+                    Nome = c.Produto.Nome, 
+                    Preco = c.Produto.Preco  
                 })
                 .ToListAsync();
 
@@ -76,7 +81,7 @@ namespace API.Controllers
         }
 
         [HttpDelete("{produtoId}")]
-        public async Task<IActionResult> Remover(string produtoId)
+        public async Task<IActionResult> Remover(int produtoId)
         {
             var clienteId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 

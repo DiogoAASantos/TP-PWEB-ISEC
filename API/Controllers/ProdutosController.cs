@@ -82,7 +82,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Produto>> ObterProdutoPorId(string id)
+        public async Task<ActionResult<Produto>> ObterProdutoPorId(int id)
         {
             var produto = await _context.Produtos
                 .FirstOrDefaultAsync(p => p.Id == id);

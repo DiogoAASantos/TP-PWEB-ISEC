@@ -1,12 +1,14 @@
-﻿using RCL.Data.Model;
+﻿using Blazored.LocalStorage;
+using RCL.Data.DTO;
+using RCL.Data.DTO.Auth;
+using RCL.Data.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
-using RCL.Data.DTO.Auth;
-using RCL.Data.DTO;
 
 namespace RCL.Data.Interfaces
 {
@@ -14,10 +16,12 @@ namespace RCL.Data.Interfaces
     {
         private readonly HttpClient _http;
         private UserDTO? _fornecedorLogado;
+        private readonly IMyStorageService _localStorage;
 
-        public FornecedorService(HttpClient http)
+        public FornecedorService(HttpClient http, IMyStorageService localStorage)
         {
             _http = http;
+            _localStorage = localStorage;
         }
 
         public void SetFornecedor(UserDTO fornecedor)
@@ -25,12 +29,26 @@ namespace RCL.Data.Interfaces
             _fornecedorLogado = fornecedor;
         }
 
-        // Consultar histórico de vendas
         public async Task<List<VendaFornecedorDTO>> ObterVendasDoFornecedorAsync(string fornecedorId)
         {
-            // Chama a API para obter todas as encomendas que contenham produtos deste fornecedor
-            return await _http.GetFromJsonAsync<List<VendaFornecedorDTO>>($"/api/fornecedores/{fornecedorId}/vendas")
-                   ?? new List<VendaFornecedorDTO>();
+            var token = await _localStorage.GetItemAsync<string>("authToken");
+
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/fornecedores/{fornecedorId}/vendas");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Trim('"'));
+            }
+
+            var response = await _http.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<List<VendaFornecedorDTO>>()
+                       ?? new List<VendaFornecedorDTO>();
+            }
+
+            return new List<VendaFornecedorDTO>();
         }
     }
 }
