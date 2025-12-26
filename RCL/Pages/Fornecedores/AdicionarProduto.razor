@@ -11,6 +11,7 @@
 
 @inject IProdutoService ProdutoService
 @inject AuthenticationStateProvider AuthProvider
+@inject ICategoriaService CategoriaService
 @inject NavigationManager Nav
 
 <h3>Adicionar Novo Produto</h3>
@@ -21,62 +22,84 @@
 }
 
 <div class="card p-3">
+    <EditForm Model="novoProduto" OnValidSubmit="SubmeterFormulario">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-    @* Nome *@
-    <div class="mb-3">
-        <label class="form-label">Nome</label>
-        <input class="form-control" @bind="novoProduto.Nome" placeholder="Nome do produto" />
-    </div>
-
-    @* Descrição *@
-    <div class="mb-3">
-        <label class="form-label">Descrição</label>
-        <textarea class="form-control" @bind="novoProduto.Descricao" rows="3"></textarea>
-    </div>
-
-    <div class="row">
-        @* Preço *@
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Preço Base (€)</label>
-            <input type="number" class="form-control" @bind="novoProduto.Preco" step="0.01" />
+        @* Nome *@
+        <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <InputText class="form-control" @bind-Value="novoProduto.Nome" placeholder="Nome do produto" />
+            <ValidationMessage For="@(() => novoProduto.Nome)" />
         </div>
 
-        @* Stock *@
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Stock Inicial</label>
-            <input type="number" class="form-control" @bind="novoProduto.Stock" />
+        @* Descrição *@
+        <div class="mb-3">
+            <label class="form-label">Descrição</label>
+            <InputTextArea class="form-control" @bind-Value="novoProduto.Descricao" rows="3" />
+            <ValidationMessage For="@(() => novoProduto.Descricao)" />
         </div>
-    </div>
 
-    <div class="mb-3">
-        <label class="form-label">Tipo</label>
-        <select class="form-control" @bind="novoProduto.Tipo">
-            <option value="@TipoProduto.Colecionavel">Colecionável</option>
-            <option value="@TipoProduto.Complemento">Complemento</option>
-        </select>
-    </div>
+        <div class="row">
+            @* Preço *@
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Preço Base (€)</label>
+                <InputNumber class="form-control" @bind-Value="novoProduto.Preco" />
+                <ValidationMessage For="@(() => novoProduto.Preco)" />
+            </div>
 
-    <div class="mb-3">
-        <label class="form-label">Categoria</label>
-        <select class="form-control" @bind="novoProduto.CategoriaId">
-            <option value="0">-- Selecione uma Categoria --</option>
-            <option value="1">Alimentos</option>
-            <option value="2">Jogos</option>
-            <option value="3">Acessórios</option>
-            <option value="4">Antiguidades</option>
-            <option value="5">Roupa</option>
-            <option value="6">Relógios</option>
-        </select>
-    </div>
+            @* Stock *@
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Stock Inicial</label>
+                <InputNumber class="form-control" @bind-Value="novoProduto.Stock" />
+                <ValidationMessage For="@(() => novoProduto.Stock)" />
+            </div>
+        </div>
 
-    <div class="mt-3">
-        <button class="btn btn-primary" @onclick="SubmeterFormulario">Submeter</button>
-        <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Tipo</label>
+            <InputSelect class="form-control" @bind-Value="novoProduto.Tipo">
+                <option value="@TipoProduto.Colecionavel">Colecionável</option>
+                <option value="@TipoProduto.Complemento">Complemento</option>
+            </InputSelect>
+        </div>
 
+        <div class="mb-3">
+            <label class="form-label">Categoria</label>
+            <InputSelect class="form-control" @bind-Value="novoProduto.CategoriaId">
+                <option value="0">-- Selecione uma Categoria --</option>
+
+                @if (categorias == null)
+                {
+                    <option disabled>A carregar categorias...</option>
+                }
+                else
+                {
+                    @foreach (var cat in categorias)
+                    {
+                        <option value="@cat.Id">@cat.Nome</option>
+                    }
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => novoProduto.CategoriaId)" />
+        </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">Submeter</button>
+
+            <button type="button" class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+        </div>
+    </EditForm>
 </div>
 
 @code {
+    private List<CategoriaDTO> categorias = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        categorias = await CategoriaService.ObterCategoriasAsync();
+    }
+
     private Produto novoProduto = new Produto
     {
         Nome = "",

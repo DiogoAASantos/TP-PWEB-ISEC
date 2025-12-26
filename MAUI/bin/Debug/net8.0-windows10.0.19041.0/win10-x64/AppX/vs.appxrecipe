@@ -29,7 +29,7 @@
     <AppXManifest Include="C:\PWEB\Projeto\MyColl\MAUI\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2025-12-24T16:13:16.149</Modified>
+      <Modified>2025-12-26T14:38:39.186</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -43,11 +43,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\PWEB\Projeto\MyColl\MAUI\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\MAUI.dll">
       <PackagePath>MAUI.dll</PackagePath>
-      <Modified>2025-12-24T16:13:15.304</Modified>
+      <Modified>2025-12-26T14:13:22.869</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\PWEB\Projeto\MyColl\MAUI\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\apphost.exe">
       <PackagePath>MAUI.exe</PackagePath>
-      <Modified>2025-12-24T16:13:15.353</Modified>
+      <Modified>2025-12-26T14:13:22.876</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\PWEB\Projeto\MyColl\MAUI\Resources\Raw\AboutAssets.txt">
       <PackagePath>AboutAssets.txt</PackagePath>
@@ -59,7 +59,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\PWEB\Projeto\MyColl\RCL\wwwroot\app.css">
       <PackagePath>wwwroot\_content\RCL\app.css</PackagePath>
-      <Modified>2025-12-19T23:18:48.244</Modified>
+      <Modified>2025-12-25T21:14:31.950</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\PWEB\Projeto\MyColl\RCL\wwwroot\bootstrap\bootstrap.min.css">
       <PackagePath>wwwroot\_content\RCL\bootstrap\bootstrap.min.css</PackagePath>
@@ -707,7 +707,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\PWEB\Projeto\MyColl\RCL\bin\Debug\net8.0\RCL.dll">
       <PackagePath>RCL.dll</PackagePath>
-      <Modified>2025-12-24T16:13:05.774</Modified>
+      <Modified>2025-12-26T14:18:12.549</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\PWEB\Projeto\MyColl\RCL\obj\Debug\net8.0\staticwebassets.development.json">
       <PackagePath>RCL.staticwebassets.runtime.json</PackagePath>
@@ -731,7 +731,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\PWEB\Projeto\MyColl\RCL\obj\Debug\net8.0\scopedcss\projectbundle\RCL.bundle.scp.css">
       <PackagePath>wwwroot\_content\RCL\RCL.bundle.scp.css</PackagePath>
-      <Modified>2025-12-24T15:37:06.495</Modified>
+      <Modified>2025-12-25T20:57:50.429</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>

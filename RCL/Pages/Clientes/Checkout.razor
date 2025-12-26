@@ -59,13 +59,9 @@ else
 
         if (encomenda != null)
         {
-            CarrinhoService.LimparCarrinhoLocal();
+            await CarrinhoService.LimparCarrinho();
 
             Nav.NavigateTo("/historico");
-        }
-        else
-        {
-            await JS.InvokeVoidAsync("alert", "Erro ao finalizar compra. Tente novamente.");
         }
     }
 }

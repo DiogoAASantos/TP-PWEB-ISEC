@@ -16,6 +16,5 @@ namespace RCL.Data.Interfaces
 
         // Consultar histórico de encomendas
         Task<List<EncomendaDTO>> ConsultarHistoricoAsync();
-        Task<List<VendaFornecedorDTO>> ObterVendasDoFornecedorAsync();
     }
 }

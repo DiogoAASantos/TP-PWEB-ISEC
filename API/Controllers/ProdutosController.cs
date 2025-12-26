@@ -25,51 +25,15 @@ namespace API.Controllers
                 .ToListAsync();
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<Produto>>> ListarProdutosPorCategoriaAsync(
-                [FromQuery] int? categoriaId,        // MUDANÇA 1: Recebe o ID (int) em vez da Classe
-                [FromQuery] int? subcategoriaId = null, // MUDANÇA 2: Subcategoria também é um ID
-                [FromQuery] decimal? precoMin = null,
-                [FromQuery] decimal? precoMax = null,
-                [FromQuery] DisponibilidadeProduto? disponibilidade = null)
+        [HttpGet("categoria/{categoriaId}")]
+        public async Task<ActionResult<List<Produto>>> ListarProdutosPorCategoriaAsync([FromRoute] int categoriaId)
         {
-            // Começa a consulta e carrega os dados relacionados
-            var query = _context.Produtos
-                .Include(p => p.Categoria) // Importante para ver o nome da categoria no JSON
-                .AsQueryable();
+            var produtos = await _context.Produtos
+                .Include(p => p.Categoria)
+                .Where(p => p.CategoriaId == categoriaId)
+                .ToListAsync();
 
-            // Lógica de Filtro por Categoria (Corrigida)
-
-            // 1. Se o utilizador escolheu uma subcategoria específica, filtramos por ela
-            if (subcategoriaId.HasValue)
-            {
-                query = query.Where(p => p.CategoriaId == subcategoriaId.Value);
-            }
-            // 2. Se escolheu apenas a categoria principal, queremos produtos dela OU das filhas
-            else if (categoriaId.HasValue)
-            {
-                query = query.Where(p => p.CategoriaId == categoriaId.Value
-                                      || p.Categoria.CategoriaPaiId == categoriaId.Value);
-            }
-
-            // Filtros de Preço (Mantidos iguais aos teus)
-            if (precoMin.HasValue)
-            {
-                query = query.Where(p => p.Preco >= precoMin.Value);
-            }
-
-            if (precoMax.HasValue)
-            {
-                query = query.Where(p => p.Preco <= precoMax.Value);
-            }
-
-            // Filtro de Disponibilidade (Mantido igual ao teu)
-            if (disponibilidade.HasValue)
-            {
-                query = query.Where(p => p.Disponibilidade == disponibilidade.Value);
-            }
-
-            return await query.ToListAsync();
+            return Ok(produtos);
         }
 
         [HttpGet("destaque")]
@@ -77,7 +41,7 @@ namespace API.Controllers
         {
             return await _context.Produtos
                 .Where(p => p.Disponibilidade == DisponibilidadeProduto.EmStock)
-                .OrderBy(r => Guid.NewGuid()) // pega um aleatório
+                .OrderBy(r => Guid.NewGuid()) 
                 .FirstOrDefaultAsync();
         }
 

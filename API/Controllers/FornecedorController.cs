@@ -97,12 +97,11 @@ namespace API.Controllers
 
         // GET: api/fornecedores/{fornecedorId}/vendas
         [HttpGet("{fornecedorId}/vendas")]
+        [Authorize(Roles = "Fornecedor")]
         public async Task<ActionResult<List<VendaFornecedorDTO>>> ConsultarHistoricoVendas(string fornecedorId)
         {
             var vendas = await _context.EncomendaItems
-                .Include(ei => ei.Produto)
-                .Include(ei => ei.Encomenda)
-                .Where(ei => ei.Produto.FornecedorId == fornecedorId) 
+                .Where(ei => ei.Produto.FornecedorId == fornecedorId)
                 .OrderByDescending(ei => ei.Encomenda.Data_Encomenda)
                 .Select(ei => new VendaFornecedorDTO
                 {

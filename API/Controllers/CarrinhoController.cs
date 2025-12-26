@@ -29,14 +29,14 @@ namespace API.Controllers
                         ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var itens = await _context.CarrinhoItens
-                .Include(c => c.Produto) 
+                .Include(c => c.Produto)
                 .Where(c => c.ClienteId == userIdDoToken)
                 .Select(c => new CarrinhoItemDTO
                 {
                     ProdutoId = c.ProdutoId,
                     Quantidade = c.Quantidade,
-                    Nome = c.Produto.Nome, 
-                    Preco = c.Produto.Preco  
+                    Nome = c.Produto.Nome,
+                    Preco = c.Produto.Preco
                 })
                 .ToListAsync();
 
@@ -96,6 +96,15 @@ namespace API.Controllers
             if (item != null)
                 _context.CarrinhoItens.Remove(item);
 
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpDelete("{userId}/limpar")]
+        public async Task<IActionResult> LimparCarrinho(string userId)
+        {
+            var itens = _context.CarrinhoItens.Where(c => c.ClienteId == userId);
+            _context.CarrinhoItens.RemoveRange(itens);
             await _context.SaveChangesAsync();
             return Ok();
         }

@@ -288,6 +288,33 @@ namespace API.Migrations
                     b.HasIndex("CategoriaPaiId");
 
                     b.ToTable("Categoria");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nome = "Moedas"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Nome = "Selos"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Nome = "Carteiras de Fósforo"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Nome = "Pacotes de Açúcar"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Nome = "Outros Coleccionáveis"
+                        });
                 });
 
             modelBuilder.Entity("RCL.Data.Model.Encomenda", b =>

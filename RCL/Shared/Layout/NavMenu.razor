@@ -1,130 +1,52 @@
 ﻿@using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Authorization
 
-<div class="nav-scrollable">
-    <div class="top-row ps-3 navbar navbar-light">
-        <div class="container-fluid">
-            <AuthorizeView Roles="Cliente">
-                <Authorized>
-                    <a class="navbar-brand text-dark" href="Home">MyCOLL</a>
-                </Authorized>
-            </AuthorizeView>
-
+<div class="navbar-expand-lg">
+    <div class="collapse navbar-collapse show">
+        <nav class="nav">
             <AuthorizeView Roles="Fornecedor">
                 <Authorized>
-                    <a class="navbar-brand text-dark" href="fornecedor/home">MyCOLL</a>
-                </Authorized>
-            </AuthorizeView>
-
-            <AuthorizeView>
-                <NotAuthorized>
-                    <a class="navbar-brand text-dark" href="">MyCOLL</a>
-                </NotAuthorized>
-            </AuthorizeView>
-
-            <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-    </div>
-
-    <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-        <nav class="flex-column">
-            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
-                <span>Geral</span>
-            </h6>
-
-            <AuthorizeView Roles="Fornecedor">
-                <Authorized>
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="fornecedor/home" Match="NavLinkMatch.All">
-                            <span class="bi bi-house-door-fill" aria-hidden="true"></span> Início (Fornecedor)
-                        </NavLink>
-                    </div>
+                    <NavLink class="nav-link custom-nav-link" href="fornecedor/home" Match="NavLinkMatch.All">
+                        Início
+                    </NavLink>
                 </Authorized>
             </AuthorizeView>
 
             <AuthorizeView Roles="Cliente">
                 <Authorized>
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="Home" Match="NavLinkMatch.All">
-                            <span class="bi bi-house-door-fill" aria-hidden="true"></span> Início (Cliente)
-                        </NavLink>
-                    </div>
+                    <NavLink class="nav-link custom-nav-link" href="Home" Match="NavLinkMatch.All">
+                        Início
+                    </NavLink>
                 </Authorized>
             </AuthorizeView>
 
             <AuthorizeView Roles="Cliente">
                 <Authorized>
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
-                        <span>Cliente</span>
-                    </h6>
-
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="carrinho">
-                            <span class="bi bi-cart-fill" aria-hidden="true"></span> Carrinho
-                        </NavLink>
-                    </div>
-
-                    <div class="nav-item px-3">
-
-                        <NavLink class="nav-link" href="historico">
-                            <span class="bi bi-clock-history" aria-hidden="true"></span> Minhas Compras
-                        </NavLink>
-                    </div>
+                    <NavLink class="nav-link custom-nav-link" href="carrinho">
+                        Carrinho
+                    </NavLink>
+                    <NavLink class="nav-link custom-nav-link" href="historico">
+                        Minhas Compras
+                    </NavLink>
                 </Authorized>
             </AuthorizeView>
-
 
             <AuthorizeView Roles="Fornecedor">
                 <Authorized>
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
-                        <span>Fornecedor</span>
-                    </h6>
-
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="fornecedor/home">
-                            <span class="bi bi-box-seam" aria-hidden="true"></span> Meus Produtos
-                        </NavLink>
-                    </div>
-
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="fornecedor/produtos/novo">
-                            <span class="bi bi-plus-circle" aria-hidden="true"></span> Novo Produto
-                        </NavLink>
-                    </div>
-
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="fornecedor/historico">
-                            <span class="bi bi-graph-up" aria-hidden="true"></span> Minhas Vendas
-                        </NavLink>
-                    </div>
+                    <NavLink class="nav-link custom-nav-link" href="fornecedor/home">
+                        Meus Produtos
+                    </NavLink>
+                    <NavLink class="nav-link custom-nav-link" href="fornecedor/produtos/novo">
+                        Novo Produto
+                    </NavLink>
+                    <NavLink class="nav-link custom-nav-link" href="fornecedor/historico">
+                        Vendas
+                    </NavLink>
                 </Authorized>
-            </AuthorizeView>
-
-            <AuthorizeView>
-                <NotAuthorized>
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
-                        <span>Conta</span>
-                    </h6>
-
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="login">
-                            <span class="bi bi-person-badge" aria-hidden="true"></span> Entrar
-                        </NavLink>
-                    </div>
-
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="register">
-                            <span class="bi bi-person-plus" aria-hidden="true"></span> Registar
-                        </NavLink>
-                    </div>
-                </NotAuthorized>
             </AuthorizeView>
         </nav>
     </div>
 </div>
-
 
 
 @code {

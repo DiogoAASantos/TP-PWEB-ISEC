@@ -111,34 +111,6 @@ namespace API.Controllers
             }).ToList();
 
             return Ok(listaDto);
-        }
-
-        [HttpGet("fornecedor/vendas")] 
-        [Authorize(Roles = "Fornecedor")]
-        public async Task<ActionResult<List<VendaFornecedorDTO>>> GetVendasFornecedor()
-        {
-            var fornecedorIdDoToken = User.FindFirst("nameid")?.Value;
-
-            if (string.IsNullOrEmpty(fornecedorIdDoToken))
-                return Unauthorized("ID do fornecedor não encontrado no Token.");
-
-            var vendas = await _context.EncomendaItems
-                .Include(ei => ei.Produto)
-                .Include(ei => ei.Encomenda)
-                .Where(ei => ei.Produto.FornecedorId == fornecedorIdDoToken)
-                .OrderByDescending(ei => ei.Encomenda.Data_Encomenda)
-                .Select(ei => new VendaFornecedorDTO
-                {
-                    DataVenda = ei.Encomenda.Data_Encomenda,
-                    NomeProduto = ei.Produto.Nome,
-                    Quantidade = ei.Quantidade,
-                    PrecoUnitario = ei.PrecoUnitario,
-                    Total = ei.Quantidade * ei.PrecoUnitario
-                })
-                .ToListAsync();
-
-            return Ok(vendas);
-        }
-
+        }        
     }
 }

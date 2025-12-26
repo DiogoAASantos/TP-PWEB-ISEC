@@ -13,7 +13,6 @@ namespace RCL.Data.Model
         public Encomenda Encomenda { get; set; } = null!;
         public int ProdutoId { get; set; }
         public Produto Produto { get; set; } = null!;
-
         public int Quantidade { get; set; }
         public decimal PrecoUnitario { get; set; }
     }

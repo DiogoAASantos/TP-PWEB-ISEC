@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RCL.Data.Model;
+using System.Reflection.Emit;
 
 namespace API.Data
 {
@@ -17,44 +18,74 @@ namespace API.Data
         public DbSet<CarrinhoItem> CarrinhoItens { get; set; }
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Fornecedor> Fornecedores { get; set; }
+        public DbSet<Categoria> Categoria { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            // 1. Produto -> Fornecedor
+            builder.Entity<Categoria>().HasData(
+                new Categoria
+                {
+                    Id = 1,
+                    Nome = "Moedas"
+                },
+                new Categoria
+                {
+                    Id = 2,
+                    Nome = "Selos"
+                },
+                new Categoria
+                {
+                    Id = 3,
+                    Nome = "Carteiras de Fósforo"
+                },
+                new Categoria
+                {
+                    Id = 4,
+                    Nome = "Pacotes de Açúcar"
+                },
+                new Categoria
+                {
+                    Id = 5,
+                    Nome = "Outros Coleccionáveis"
+                }
+            );
+
+
+
+
+
+
             builder.Entity<Produto>()
                 .HasOne(p => p.Fornecedor)
                 .WithMany(f => f.Produtos)
                 .HasForeignKey(p => p.FornecedorId)
-                .OnDelete(DeleteBehavior.Restrict); // Impede apagar Fornecedor se tiver produtos
+                .OnDelete(DeleteBehavior.Restrict); 
 
-            // 2. Encomenda -> Cliente
             builder.Entity<Encomenda>()
                 .HasOne(e => e.Cliente)
                 .WithMany(c => c.HistoricoCompras)
                 .HasForeignKey(e => e.ClienteId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // 3. EncomendaItem -> Encomenda
             builder.Entity<EncomendaItem>()
                 .HasOne(ei => ei.Encomenda)
-                .WithMany(e => e.Itens) // <--- CORRIGIDO: Era 'Items', mudámos para 'Itens' no Model
+                .WithMany(e => e.Itens) 
                 .HasForeignKey(ei => ei.EncomendaId)
-                .OnDelete(DeleteBehavior.Cascade); // Se apagar Encomenda, apaga os itens
+                .OnDelete(DeleteBehavior.Cascade); 
 
-            // 4. EncomendaItem -> Produto
             builder.Entity<EncomendaItem>()
                 .HasOne(ei => ei.Produto)
                 .WithMany()
                 .HasForeignKey(ei => ei.ProdutoId)
-                .OnDelete(DeleteBehavior.Restrict); // Não apaga o item do histórico se o produto for apagado da loja
+                .OnDelete(DeleteBehavior.Restrict); 
 
             builder.Entity<CarrinhoItem>()
                 .HasOne(ci => ci.Cliente)
-                .WithMany() // Assumindo que Cliente não tem lista 'Carrinho', é unidirecional
+                .WithMany() 
                 .HasForeignKey(ci => ci.ClienteId)
-                .OnDelete(DeleteBehavior.Cascade); // Se apagar o Cliente, apaga o carrinho
+                .OnDelete(DeleteBehavior.Cascade); 
 
             builder.Entity<CarrinhoItem>()
                 .HasOne(ci => ci.Produto)
@@ -62,7 +93,6 @@ namespace API.Data
                 .HasForeignKey(ci => ci.ProdutoId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Configuração da Categoria (Auto-Relacionamento)
             builder.Entity<Categoria>()
                 .HasOne(c => c.CategoriaPai)
                 .WithMany(c => c.SubCategorias)
@@ -75,7 +105,6 @@ namespace API.Data
                 .HasForeignKey(p => p.CategoriaId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Define que os campos monetários têm 18 dígitos, sendo 2 casas decimais
             builder.Entity<Produto>()
                 .Property(p => p.Preco)
                 .HasColumnType("decimal(18,2)");

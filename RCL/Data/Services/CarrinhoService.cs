@@ -115,7 +115,12 @@ namespace RCL.Data.Services
             return itens.Sum(item => item.Produto.Preco * item.Quantidade);
         }
 
-        public void LimparCarrinhoLocal() => _carrinhoLocal.Clear();
+        public async Task LimparCarrinho()
+        {
+            string userId = await GetUserIdAsync();
+            var request = await CreateRequestAsync(HttpMethod.Delete, $"api/carrinho/{userId}/limpar");
+            await _http.SendAsync(request);
+        } 
     }
 }
 

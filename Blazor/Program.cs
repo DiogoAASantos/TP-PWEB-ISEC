@@ -49,6 +49,11 @@ builder.Services.AddHttpClient<IProdutoService, ProdutoService>(client =>
     client.BaseAddress = new Uri("https://localhost:7000/");
 });
 
+builder.Services.AddHttpClient<ICategoriaService, CategoriaService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7000/");
+});
+
 builder.Services.AddHttpClient("APIClient", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7000");

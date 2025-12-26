@@ -16,6 +16,21 @@
 <body>
     <RCL.Routes @rendermode="InteractiveServer" />
     <script src="_framework/blazor.web.js"></script>
+
+    <script>
+        window.scrollElemento = (elementId, direction) => {
+            const element = document.getElementById(elementId);
+            if (element) {
+                const scrollAmount = 200;
+                if (direction === 'left') {
+                    element.scrollLeft -= scrollAmount;
+                } else {
+                    element.scrollLeft += scrollAmount;
+                }
+            }
+        }
+    </script>
+
 </body>
 
 </html>

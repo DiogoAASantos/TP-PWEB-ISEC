@@ -7,7 +7,7 @@
 @using RCL.Data.Interfaces
 
 @attribute [Authorize(Roles = "Fornecedor")]
-@inject IEncomendaService EncomendaService
+@inject IFornecedorService FornecedorService
 @inject AuthenticationStateProvider AuthProvider
 
 <h3>Minhas Vendas</h3>
@@ -62,7 +62,7 @@ else
 
             if (!string.IsNullOrEmpty(userId))
             {
-                vendas = await EncomendaService.ObterVendasDoFornecedorAsync() ?? new();
+                vendas = await FornecedorService.ObterVendasDoFornecedorAsync(userId) ?? new();
             }
             else
             {

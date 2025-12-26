@@ -5,8 +5,35 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.Security.Claims
 
+<div class="main-container">
+    <header class="top-bar">
+        <div class="brand">
+            <h1 @onclick='() => Nav.NavigateTo("/")'>MyColl</h1>
+        </div>
 
-<div class="page">
+        <nav class="top-nav-links">
+            <NavMenu />
+        </nav>
+
+        <div class="user-actions">
+            <AuthorizeView>
+                <Authorized>
+                    <span class="user-greeting">Olá, <b>@context.User.Identity?.Name</b></span>
+                    <button class="logout-button" @onclick="LogoutUser">Sair</button>
+                </Authorized>
+            </AuthorizeView>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <article class="content-wrapper">
+            @Body
+        </article>
+    </main>
+</div>
+
+
+@*<div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
@@ -25,7 +52,7 @@
             @Body
         </article>
     </main>
-</div>
+</div>*@
 
 @code {
     [CascadingParameter]

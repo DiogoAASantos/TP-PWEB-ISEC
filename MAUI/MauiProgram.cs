@@ -46,6 +46,7 @@ namespace MyColl.MAUI
             builder.Services.AddScoped<IClienteService, ClienteService>();
             builder.Services.AddScoped<IFornecedorService, FornecedorService>();
             builder.Services.AddScoped<IProdutoService, ProdutoService>();
+            builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 
             builder.Services.AddAuthorizationCore(); 
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthProvider>();

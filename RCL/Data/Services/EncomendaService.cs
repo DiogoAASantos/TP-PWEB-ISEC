@@ -64,8 +64,6 @@ namespace RCL.Data.Services
 
             response.EnsureSuccessStatusCode();
 
-            _carrinhoService.LimparCarrinhoLocal();
-
             return await response.Content.ReadFromJsonAsync<Encomenda>()
                    ?? throw new Exception("Falha ao ler resposta da encomenda.");
         }
@@ -78,18 +76,6 @@ namespace RCL.Data.Services
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<List<EncomendaDTO>>() ?? new();
-            }
-            return new();
-        }
-
-        public async Task<List<VendaFornecedorDTO>> ObterVendasDoFornecedorAsync()
-        {
-            var request = await CreateAuthenticatedRequestAsync(HttpMethod.Get, "api/encomendas/fornecedor/vendas");
-            var response = await _http.SendAsync(request);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<List<VendaFornecedorDTO>>() ?? new();
             }
             return new();
         }
