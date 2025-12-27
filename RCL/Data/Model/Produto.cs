@@ -28,6 +28,7 @@ namespace RCL.Data.Model
 
         [ForeignKey("CategoriaId")]
         public Categoria? Categoria { get; set; }
+        public string? ImagemUrl { get; set; }
 
 
     }

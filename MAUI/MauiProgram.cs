@@ -25,7 +25,7 @@ namespace MyColl.MAUI
             builder.Logging.AddDebug();
 #endif
 
-            string baseAddress = "https://q5qv1x8d-7000.uks1.devtunnels.ms/";
+            string baseAddress = "https://72qc49t4-7000.uks1.devtunnels.ms/";
 
             builder.Services.AddSingleton<IMyStorageService, MauiStorageService>();
             builder.Services.AddBlazoredLocalStorage();

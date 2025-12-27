@@ -12,7 +12,6 @@ namespace RCL.Data.Services
         private readonly AuthenticationStateProvider _authProvider;
         private readonly IMyStorageService _localStorage;
 
-        // Injetamos também o AuthenticationStateProvider
         public AuthService(HttpClient http, AuthenticationStateProvider authProvider, IMyStorageService localStorage)
         {
             _http = http;
@@ -52,13 +51,9 @@ namespace RCL.Data.Services
 
         public async Task LogoutAsync()
         {
-            // 1. Limpar LocalStorage
             await _localStorage.RemoveItemAsync("authToken");
-
-            // 2. Limpar o cabeçalho do HttpClient (caso tenha sido injetado algum)
             _http.DefaultRequestHeaders.Authorization = null;
 
-            // 3. Notificar o sistema
             if (_authProvider is CustomAuthProvider customAuth)
             {
                 customAuth.NotifyUserLoggedOut();

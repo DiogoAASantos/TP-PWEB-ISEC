@@ -44,26 +44,50 @@ namespace API.Controllers
 
             decimal totalCalculado = 0;
 
-            foreach (var itemDto in dto.Itens)
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                var produtoDb = await _context.Produtos.FindAsync(itemDto.ProdutoId);
-                if (produtoDb == null) continue;
-
-                var novoItem = new EncomendaItem
+                foreach (var itemDto in dto.Itens)
                 {
-                    ProdutoId = produtoDb.Id,
-                    Quantidade = itemDto.Quantidade,
-                    PrecoUnitario = produtoDb.Preco
-                };
+                    var produtoDb = await _context.Produtos.FindAsync(itemDto.ProdutoId);
 
-                novaEncomenda.Itens.Add(novoItem);
-                totalCalculado += (produtoDb.Preco * itemDto.Quantidade);
+                    if (produtoDb == null)
+                        return BadRequest($"Produto com ID {itemDto.ProdutoId} não existe.");
+
+                    if (produtoDb.Stock < itemDto.Quantidade)
+                    {
+                        return BadRequest($"Stock insuficiente para o produto '{produtoDb.Nome}'. Disponível: {produtoDb.Stock}.");
+                    }
+
+                    produtoDb.Stock -= itemDto.Quantidade;
+                    
+                    var novoItem = new EncomendaItem
+                    {
+                        ProdutoId = produtoDb.Id,
+                        Quantidade = itemDto.Quantidade,
+                        PrecoUnitario = produtoDb.Preco
+                    };
+
+                    novaEncomenda.Itens.Add(novoItem);
+                    totalCalculado += (produtoDb.Preco * itemDto.Quantidade);
+
+                    _context.Entry(produtoDb).State = EntityState.Modified;
+                }
+
+                novaEncomenda.Total = totalCalculado;
+
+                _context.Encomendas.Add(novaEncomenda);
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync(); 
             }
-
-            novaEncomenda.Total = totalCalculado;
-
-            _context.Encomendas.Add(novaEncomenda);
-            await _context.SaveChangesAsync();
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(); 
+                return StatusCode(500, "Erro ao processar encomenda: " + ex.Message);
+            }
 
             var resultadoDto = new EncomendaDTO
             {

@@ -12,6 +12,7 @@ namespace RCL.Data.Model
         public string Nome { get; set; } = string.Empty;
 
         public int? CategoriaPaiId { get; set; }
+        public string? ImagemUrl { get; set; } 
 
         [ForeignKey("CategoriaPaiId")]
         [JsonIgnore] 
@@ -21,5 +22,7 @@ namespace RCL.Data.Model
 
         [JsonIgnore]
         public List<Produto> Produtos { get; set; } = new();
+
+
     }
 }

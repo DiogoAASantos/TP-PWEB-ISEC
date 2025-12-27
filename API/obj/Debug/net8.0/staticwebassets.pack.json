@@ -1,0 +1,45 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\PWEB\\Projeto\\MyColl\\API\\wwwroot\\images\\categorias\\carteiras_fosforos.jpg",
+      "PackagePath": "staticwebassets\\images\\categorias\\carteiras_fosforos.jpg"
+    },
+    {
+      "Id": "C:\\PWEB\\Projeto\\MyColl\\API\\wwwroot\\images\\categorias\\moedas.jpg",
+      "PackagePath": "staticwebassets\\images\\categorias\\moedas.jpg"
+    },
+    {
+      "Id": "C:\\PWEB\\Projeto\\MyColl\\API\\wwwroot\\images\\categorias\\pacotes_açucar.jpg",
+      "PackagePath": "staticwebassets\\images\\categorias\\pacotes_açucar.jpg"
+    },
+    {
+      "Id": "C:\\PWEB\\Projeto\\MyColl\\API\\wwwroot\\images\\categorias\\selos.jpg",
+      "PackagePath": "staticwebassets\\images\\categorias\\selos.jpg"
+    },
+    {
+      "Id": "C:\\PWEB\\Projeto\\MyColl\\API\\wwwroot\\images\\produtos\\2abda27a-b83a-4544-a9a2-7e25b2b63ecf.jpg",
+      "PackagePath": "staticwebassets\\images\\produtos\\2abda27a-b83a-4544-a9a2-7e25b2b63ecf.jpg"
+    },
+    {
+      "Id": "C:\\PWEB\\Projeto\\MyColl\\API\\wwwroot\\images\\produtos\\ff049028-0899-4c64-9812-fb45d79a2742.jpg",
+      "PackagePath": "staticwebassets\\images\\produtos\\ff049028-0899-4c64-9812-fb45d79a2742.jpg"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.API.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.API.props",
+      "PackagePath": "build\\API.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.API.props",
+      "PackagePath": "buildMultiTargeting\\API.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.API.props",
+      "PackagePath": "buildTransitive\\API.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

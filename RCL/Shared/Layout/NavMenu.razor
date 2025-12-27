@@ -4,22 +4,6 @@
 <div class="navbar-expand-lg">
     <div class="collapse navbar-collapse show">
         <nav class="nav">
-            <AuthorizeView Roles="Fornecedor">
-                <Authorized>
-                    <NavLink class="nav-link custom-nav-link" href="fornecedor/home" Match="NavLinkMatch.All">
-                        Início
-                    </NavLink>
-                </Authorized>
-            </AuthorizeView>
-
-            <AuthorizeView Roles="Cliente">
-                <Authorized>
-                    <NavLink class="nav-link custom-nav-link" href="Home" Match="NavLinkMatch.All">
-                        Início
-                    </NavLink>
-                </Authorized>
-            </AuthorizeView>
-
             <AuthorizeView Roles="Cliente">
                 <Authorized>
                     <NavLink class="nav-link custom-nav-link" href="carrinho">

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using RCL.Data.DTO;
 using RCL.Data.Model;
 using RCL.Data.Model.Enums;
@@ -15,18 +16,51 @@ namespace API.Controllers
     public class FornecedoresController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public FornecedoresController(ApplicationDbContext context)
+        public FornecedoresController(ApplicationDbContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
 
         // POST: api/fornecedores/produtos
         [HttpPost("produtos")]
-        public async Task<ActionResult<Produto>> InserirProduto([FromBody] Produto produto)
+        public async Task<ActionResult<Produto>> InserirProduto([FromForm] CriarProdutoDTO dto)
         {
-            produto.Estado = EstadoProduto.AVenda;
-            produto.Id = 0;
+            var produto = new Produto
+            {
+                Nome = dto.Nome,
+                Descricao = dto.Descricao,
+                Preco = dto.Preco,
+                Stock = dto.Stock,
+                Tipo = (TipoProduto)dto.Tipo, 
+                CategoriaId = dto.CategoriaId,
+                FornecedorId = dto.FornecedorId,
+                Estado = EstadoProduto.AVenda,
+                Id = 0
+            };
+
+            if (dto.Imagem != null && dto.Imagem.Length > 0)
+            {
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(dto.Imagem.FileName);
+
+                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "produtos");
+
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await dto.Imagem.CopyToAsync(fileStream);
+                }
+
+                produto.ImagemUrl = $"/images/produtos/{uniqueFileName}";
+            }
 
             _context.Produtos.Add(produto);
             await _context.SaveChangesAsync();
@@ -68,10 +102,8 @@ namespace API.Controllers
             produto.Descricao = produtoAtualizado.Descricao;
             produto.Preco = produtoAtualizado.Preco;
             produto.Categoria = produtoAtualizado.Categoria;
-            //produto.SubCategoria = produtoAtualizado.SubCategoria;
             produto.Disponibilidade = produtoAtualizado.Disponibilidade;
 
-            // Após edição, produto volta para pendente aprovação
             produto.Estado = EstadoProduto.PendenteAprovacao;
 
             _context.Produtos.Update(produto);

@@ -6,11 +6,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RCL.Data.Model;
 using System.Text;
+using Microsoft.AspNetCore.ResponseCompression;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. DbContext e Identity
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -32,8 +32,6 @@ builder.Services.AddCors(options => {
     });
 });
 
-
-// 2. Configuração JWT
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
@@ -61,7 +59,6 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// 3. Swagger com Segurança (MOVIDO PARA CIMA DO BUILD)
 builder.Services.AddSwaggerGen(c => {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "MyColl API", Version = "v1" });
 
@@ -88,10 +85,8 @@ builder.Services.AddSwaggerGen(c => {
     });
 });
 
-// --- FIM DOS SERVIÇOS ---
 var app = builder.Build();
 
-// 4. Seed Roles
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -106,8 +101,6 @@ using (var scope = app.Services.CreateScope())
 
 app.UseCors("AllowAll");
 
-
-// 5. Middleware Pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -115,8 +108,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
 app.Run();

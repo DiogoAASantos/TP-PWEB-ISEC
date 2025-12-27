@@ -6,6 +6,7 @@
 @inject IProdutoService Produtos
 @inject ICarrinhoService CarrinhoService
 @inject NavigationManager Nav
+@inject IJSRuntime JS
 
 <h3>Detalhes do Produto</h3>
 
@@ -16,8 +17,22 @@
 else
 {
     <div class="produto">
+
+        @if (!string.IsNullOrEmpty(produto.ImagemUrl))
+        {
+            <img src="@($"https://72qc49t4-7000.uks1.devtunnels.ms{produto.ImagemUrl}")"
+                 alt="@produto.Nome"
+                 style="max-width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 10px;" />
+        }
+        else
+        {
+            <div style="height: 200px; background-color: #e0e0e0; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 10px;">
+                <span style="color: #666;">Sem Foto</span>
+            </div>
+        }
+
         <h2>@produto.Nome</h2>
-        <p><strong>Preço:</strong> @produto.Preco €</p>
+        <p><strong>Preço:</strong> @produto.Preco.ToString("C2")</p> 
         <p><strong>Disponibilidade:</strong> @produto.Disponibilidade</p>
         <p><strong>Descrição:</strong> @produto.Descricao</p>
 
@@ -38,10 +53,18 @@ else
 
     private async Task AdicionarAoCarrinho()
     {
-        if (produto != null)
+        if (produto == null) return;
+
+        var produtoAtual = await Produtos.ObterProdutoPorIdAsync(id);
+
+        if (produtoAtual != null && produtoAtual.Stock > 0)
         {
             await CarrinhoService.AdicionarProdutoAsync(produto.Id, 1);
             Nav.NavigateTo("/carrinho");
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Lamentamos, este produto esgotou.");
         }
     }
 }

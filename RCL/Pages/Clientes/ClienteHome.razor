@@ -24,9 +24,21 @@
             @foreach (var cat in categorias)
             {
                 <div class="category-card" @onclick="() => FiltrarPorCategoria(cat.Id)">
-                    @*<img src="@cat.ImagemUrl" ... />*@ 
-                    
-                        <div class="cat-info" style="@(categoriaSelecionada == cat.Id ? "background-color: #FFEB3B; color: black;" : "")">
+
+                    @if (!string.IsNullOrEmpty(cat.ImagemUrl))
+                    {
+                        <img src="@($"https://72qc49t4-7000.uks1.devtunnels.ms{cat.ImagemUrl}")"
+                             alt="@cat.Nome"
+                             class="cat-img" />
+                    }
+                    else
+                    {
+                        <div class="placeholder-img">
+                            <i class="bi bi-image"></i>
+                        </div>
+                    }
+
+                    <div class="cat-info" style="@(categoriaSelecionada == cat.Id ? "background-color: #FFEB3B; color: black; font-weight:bold;" : "")">
                         <span class="cat-name">@cat.Nome</span>
                     </div>
                 </div>

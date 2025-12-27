@@ -23,8 +23,22 @@ else
                      @onclick="@(() => Nav.NavigateTo($"/produto/{p.Id}"))"
                      style="cursor: pointer;">
 
-                    <div class="position-relative">
-                        <img src="https://via.placeholder.com/300x200?text=@p.Nome" class="card-img-top p-3" alt="@p.Nome" style="border-radius: 25px;">
+                    <div class="position-relative text-center" style="background-color: #f8f9fa; border-radius: 25px 25px 0 0;">
+
+                        @if (!string.IsNullOrEmpty(p.ImagemUrl))
+                        {
+                            <img src="@($"https://72qc49t4-7000.uks1.devtunnels.ms{p.ImagemUrl}")"
+                                 class="card-img-top p-3"
+                                 alt="@p.Nome"
+                                 style="border-radius: 25px; height: 200px; width: auto; object-fit: contain;">
+                        }
+                        else
+                        {
+                            <img src="@($"https://placehold.co/300x200?text={Uri.EscapeDataString(p.Nome)}")"
+                                 class="card-img-top p-3"
+                                 alt="@p.Nome"
+                                 style="border-radius: 25px; height: 200px; object-fit: cover;">
+                        }
 
                         @if (p.Stock > 0)
                         {

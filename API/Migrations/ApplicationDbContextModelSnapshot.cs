@@ -279,6 +279,9 @@ namespace API.Migrations
                     b.Property<int?>("CategoriaPaiId")
                         .HasColumnType("int");
 
+                    b.Property<string>("ImagemUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -293,21 +296,25 @@ namespace API.Migrations
                         new
                         {
                             Id = 1,
+                            ImagemUrl = "/images/categorias/moedas.jpg",
                             Nome = "Moedas"
                         },
                         new
                         {
                             Id = 2,
+                            ImagemUrl = "/images/categorias/selos.jpg",
                             Nome = "Selos"
                         },
                         new
                         {
                             Id = 3,
+                            ImagemUrl = "/images/categorias/carteiras_fosforos.jpg",
                             Nome = "Carteiras de Fósforo"
                         },
                         new
                         {
                             Id = 4,
+                            ImagemUrl = "/images/categorias/pacotes_açucar.jpg",
                             Nome = "Pacotes de Açúcar"
                         },
                         new
@@ -401,6 +408,9 @@ namespace API.Migrations
                     b.Property<string>("FornecedorId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ImagemUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nome")
                         .IsRequired()

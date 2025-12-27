@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject IAuthService AuthService
 @inject NavigationManager Nav
+@inject AuthenticationStateProvider AuthProvider
 
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.Security.Claims
@@ -8,7 +9,7 @@
 <div class="main-container">
     <header class="top-bar">
         <div class="brand">
-            <h1 @onclick='() => Nav.NavigateTo("/")'>MyColl</h1>
+            <h1 @onclick="NavegarParaHome" style="cursor: pointer">MyColl</h1>
         </div>
 
         <nav class="top-nav-links">
@@ -32,28 +33,6 @@
     </main>
 </div>
 
-
-@*<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4 bg-white border-bottom shadow-sm">
-            <AuthorizeView>
-                <Authorized>
-                    <span class="me-3 text-dark"> <b>Olá!</b> </span>
-                    <a href="logout" class="btn btn-sm btn-outline-danger" @onclick=LogoutUser>Sair</a>
-                </Authorized>
-            </AuthorizeView>
-        </div>
-
-        <article class="content px-4 py-4">
-            @Body
-        </article>
-    </main>
-</div>*@
-
 @code {
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationStateTask { get; set; }
@@ -75,6 +54,32 @@
             {
                 displayName = "Amigo";
             }
+        }
+    }
+
+    private async Task NavegarParaHome()
+    {
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            if (user.IsInRole("Fornecedor"))
+            {
+                Nav.NavigateTo("/fornecedor/home");
+            }
+            else if (user.IsInRole("Cliente"))
+            {
+                Nav.NavigateTo("/hcliente");
+            }
+            else
+            {
+                Nav.NavigateTo("/");
+            }
+        }
+        else
+        {
+            Nav.NavigateTo("/");
         }
     }
 

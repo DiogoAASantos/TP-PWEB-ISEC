@@ -37,21 +37,41 @@ else
         @foreach (var p in produtos)
         {
             <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    @* Se tiveres imagens, coloca aqui *@
+                <div class="card h-100 shadow-sm">
+                    <div style="height: 200px; overflow: hidden; background-color: #e9ecef;" class="position-relative d-flex align-items-center justify-content-center">
+                        @if (!string.IsNullOrEmpty(p.ImagemUrl))
+                        {
+                            <img src="@($"https://localhost:7000{p.ImagemUrl}")"
+                                 class="card-img-top h-100 w-100"
+                                 alt="@p.Nome"
+                                 style="object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="text-muted text-center">
+                                <i class="bi bi-camera-fill fs-1"></i>
+                                <div>Sem Foto</div>
+                            </div>
+                        }
+                    </div>
+
                     <div class="card-body">
-                        <h5 class="card-title">@p.Nome</h5>
+                        <h5 class="card-title text-truncate">@p.Nome</h5>
                         <p class="card-text">
                             <strong>Preço:</strong> @p.Preco.ToString("C2")<br />
-                            <strong>Stock:</strong> @p.Stock<br />
-                            <strong>Estado:</strong> 
+                            <strong>Stock:</strong>
+                            <span class="@(p.Stock > 0 ? "text-success" : "text-danger fw-bold")">
+                                @p.Stock
+                            </span><br />
+
+                            <strong>Estado:</strong>
                             <span class="badge @ObterCorEstado(p.Estado)">@p.Estado</span>
                         </p>
                     </div>
-                    <div class="card-footer">
-                        <button class="btn btn-secondary w-100"
+                    <div class="card-footer bg-white border-top-0">
+                        <button class="btn btn-primary w-100"
                                 @onclick="@(() => Nav.NavigateTo($"/fornecedor/produtos/editar/{p.Id}"))">
-                            Gerir / Editar
+                            <i class="bi bi-pencil-square me-2"></i> Gerir / Editar
                         </button>
                     </div>
                 </div>

@@ -1,14 +1,15 @@
 ﻿using API.Data;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using RCL.Data.Model;
+using Microsoft.IdentityModel.Tokens;
 using RCL.Data.DTO.Auth;
+using RCL.Data.Model;
 using RCL.Data.Model.Enums;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace API.Controllers
 {
@@ -37,7 +38,6 @@ namespace API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO dto)
         {
-            // 1. Instanciar o tipo correto logo no início
             ApplicationUser user;
 
             if (dto.TipoUtilizador == TipoUtilizador.Cliente)
@@ -63,7 +63,6 @@ namespace API.Controllers
                 };
             }
 
-            // 2. O CreateAsync já guarda tudo na base de dados (Users e a tabela de Cliente/Fornecedor)
             var result = await _userManager.CreateAsync(user, dto.Password);
 
             if (!result.Succeeded)
@@ -71,17 +70,12 @@ namespace API.Controllers
 
             await _userManager.AddToRoleAsync(user, dto.TipoUtilizador.ToString());
 
-            // NÃO precisas de _context.Clientes.Add nem de _context.SaveChangesAsync() 
-            // porque o CreateAsync já fez o trabalho se a herança estiver bem configurada.
-
             return Ok("Utilizador criado com sucesso");
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO dto)
         {
-            // 1. A TUA LÓGICA ORIGINAL (Validação de Password)
-            // Nota: O último 'false' impede o bloqueio da conta em falhas para facilitar testes
             var result = await _signInManager.PasswordSignInAsync(dto.Email, dto.Password, false, false);
 
             if (!result.Succeeded)
@@ -90,8 +84,6 @@ namespace API.Controllers
             UserDTO? userResponse = null;
             string role = "";
 
-            // 2. A TUA LÓGICA ORIGINAL (Identificar se é Cliente ou Fornecedor)
-            // Usamos OfType para garantir que vamos buscar os dados específicos
 
             var cliente = await _userManager.Users.OfType<Cliente>().FirstOrDefaultAsync(c => c.Email == dto.Email);
             if (cliente != null)
@@ -102,13 +94,12 @@ namespace API.Controllers
                 {
                     Id = cliente.Id,
                     Email = cliente.Email!,
-                    Nome = cliente.Nome!, // Propriedade específica de Cliente
+                    Nome = cliente.Nome!, 
                     Tipo = role
                 };
             }
             else
             {
-                // Se não for cliente, verifica se é fornecedor
                 var fornecedor = await _userManager.Users.OfType<Fornecedor>().FirstOrDefaultAsync(f => f.Email == dto.Email);
                 if (fornecedor != null)
                 {
@@ -117,7 +108,7 @@ namespace API.Controllers
                     {
                         Id = fornecedor.Id,
                         Email = fornecedor.Email!,
-                        Nome = fornecedor.Nome!, // Propriedade específica de Fornecedor
+                        Nome = fornecedor.Nome!, 
                         Tipo = role
                     };
                 }
@@ -126,8 +117,6 @@ namespace API.Controllers
             if (userResponse == null)
                 return Unauthorized("Utilizador existe mas não tem perfil de Cliente nem Fornecedor.");
 
-            // 3. A NOVIDADE: GERAR O TOKEN JWT
-            // Sem isto, o login é inútil para o MAUI/Blazor
             userResponse.Token = GerarTokenJwt(userResponse.Id, userResponse.Email, role);
 
             return Ok(userResponse);
@@ -139,7 +128,6 @@ namespace API.Controllers
 
             var claims = new List<Claim>
             {
-                // Usa ClaimTypes para garantir compatibilidade total
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(ClaimTypes.Email, email),
                 new Claim(ClaimTypes.Role, role)
@@ -148,7 +136,7 @@ namespace API.Controllers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddDays(7), // Token dura 7 dias
+                Expires = DateTime.UtcNow.AddDays(7), 
                 Issuer = _configuration["Jwt:Issuer"],
                 Audience = _configuration["Jwt:Audience"],
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

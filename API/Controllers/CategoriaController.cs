@@ -28,7 +28,8 @@ namespace API.Controllers
                     .Select(c => new CategoriaDTO
                     {
                         Id = c.Id,
-                        Nome = c.Nome
+                        Nome = c.Nome,
+                        ImagemUrl = c.ImagemUrl
                     })
                     .ToListAsync();
 

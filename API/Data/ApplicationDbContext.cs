@@ -28,22 +28,26 @@ namespace API.Data
                 new Categoria
                 {
                     Id = 1,
-                    Nome = "Moedas"
+                    Nome = "Moedas",
+                    ImagemUrl = "/images/categorias/moedas.jpg"
                 },
                 new Categoria
                 {
                     Id = 2,
-                    Nome = "Selos"
+                    Nome = "Selos",
+                    ImagemUrl = "/images/categorias/selos.jpg"
                 },
                 new Categoria
                 {
                     Id = 3,
-                    Nome = "Carteiras de Fósforo"
+                    Nome = "Carteiras de Fósforo",
+                    ImagemUrl = "/images/categorias/carteiras_fosforos.jpg"
                 },
                 new Categoria
                 {
                     Id = 4,
-                    Nome = "Pacotes de Açúcar"
+                    Nome = "Pacotes de Açúcar",
+                    ImagemUrl = "/images/categorias/pacotes_açucar.jpg"
                 },
                 new Categoria
                 {
